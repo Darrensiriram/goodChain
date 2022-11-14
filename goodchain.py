@@ -1,3 +1,5 @@
+# import os
+# os.system("pip install -r requirements.txt")
 import sqlite3
 from getpass import getpass
 from database_actions import login
