@@ -15,7 +15,9 @@ class createDatabase:
             'id INTEGER PRIMARY KEY AUTOINCREMENT,'
             'username VARCHAR NOT NULL,'
             'password VARCHAR NOT NULL,'
-            'coins INTEGER'
+            'coins INTEGER,'
+            'private_key VARCHAR,'
+            'public_key VARCHAR'
             ')'
         ))
         self.connection.commit()
