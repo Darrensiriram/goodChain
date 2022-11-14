@@ -3,19 +3,19 @@ from os import path
 
 class createDatabase:
 
-    connection = Connection
-    def __init__(self):
-        if path.exists("goodchain.db"):
+    def __init__(self, connection):
+        self.connection = connection
+        if path.exists("database_actions/goodchain.db"):
             self.create_user_table()
 
 
     def create_user_table(self):
         self.connection.execute((
             'CREATE TABLE if not exists users('
-            'id INTEGER PRIMARY KEY AUTOINCREMENT'
-            'username VARCHAR NOT NULL'
-            'password VARCHAR NOT NULL'
-            'role VARCHAR'
+            'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+            'username VARCHAR NOT NULL,'
+            'password VARCHAR NOT NULL,'
+            'coins INTEGER'
             ')'
         ))
         self.connection.commit()

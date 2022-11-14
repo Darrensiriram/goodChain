@@ -1,6 +1,9 @@
 import sqlite3
 from getpass import getpass
 from database_actions import login
+from database_actions import signup as s
+from database_actions import connectionSQL as dbcreate
+
 
 connection = sqlite3.Connection('database_actions/goodchain.db')
 
@@ -19,12 +22,17 @@ def switchCase(response):
     if response == 1:
        username = input("Fill in your username please: ")
        password = getpass("Please fill your password in: ")
-       loginUser = login.login(username, password)
+       loginUser = login.login(connection, username, password)
        loginUser.loginUser()
     elif response == 2:
         print("Exploring the blockchain")
     elif response == 3:
-        print("Sign up")
+        dbcreate.createDatabase(connection)
+        username = input("Fill in your username please: ")
+        password = getpass("Please fill your password in: ")
+        coins = 50
+        signupUser = s.signUp(connection=connection,username=username, password=password, coins=coins)
+        s.signUp.signUpUser(signupUser)
     elif response == 4:
         exit("Thank you for using the goodchain")
 
