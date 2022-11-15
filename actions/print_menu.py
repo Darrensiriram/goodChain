@@ -1,4 +1,6 @@
 from actions import check_balance
+from actions import transferCoins
+from database_actions import login
 
 def print_menu_loggedIn(auth_user, connection):
     cur = connection.cursor()
@@ -16,11 +18,16 @@ def print_menu_loggedIn(auth_user, connection):
 
 
 def actions(auth_user, connection):
-    print_menu_loggedIn(auth_user, connection)
-    response = int(input("What would u like to do? \n"))
     while True:
+        print_menu_loggedIn(auth_user, connection)
+        response = int(input("What would u like to do? \n"))
         if response == 1:
-            print("Transfer my coins asah!")
+            chosen_user = input("please enter the username: ")
+            amount = int(input("please specify the coin amount: "))
+            transactionfee = int(input("please enter a transaction fee: "))
+            transferCoinsobject = transferCoins.transfercoins(connection, auth_user, chosen_user, amount, transactionfee)
+            transferCoinsobject.createTx(amount, transactionfee)
+            print("Coins have been transferred")
             continue
         elif response == 2:
             balanceObject = check_balance.balance(connection, auth_user)
@@ -41,4 +48,4 @@ def actions(auth_user, connection):
             continue
         elif response == 7:
             print("Log out")
-            continue
+            break
