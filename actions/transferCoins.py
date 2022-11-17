@@ -56,7 +56,10 @@ class transfercoins:
         new_tx = pickle.load(loadfile)
 
         if new_tx.is_valid:
+            status = True
             print("Success! Loaded tx is valid")
         else:
+            status = False
             print("Fail!")
         loadfile.close()
+        return status
