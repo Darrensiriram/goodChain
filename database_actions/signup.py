@@ -1,5 +1,5 @@
 import bcrypt
-from actions.Signature import generate_keys
+from blockchainActions.Signature import generate_keys
 
 
 class signUp:
