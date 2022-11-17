@@ -17,6 +17,7 @@ class Tx:
         self.outputs = []
         self.sigs = []
         self.reqd = []
+        self.status = []
 
     def add_input(self, from_addr, amount):
         self.inputs.append((from_addr, amount))
@@ -26,6 +27,9 @@ class Tx:
 
     def add_reqd(self, addr):
         self.reqd.append(addr)
+
+    def add_status(self, st):
+        self.status.append(st)
 
     def sign(self, private):
         message = self.__gather()
@@ -76,6 +80,7 @@ class Tx:
         data.append(self.inputs)
         data.append(self.outputs)
         data.append(self.reqd)
+        data.append(self.status)
         return data
 
     def __repr__(self):
@@ -95,6 +100,10 @@ class Tx:
         repr_str += "SIGNATURES:\n"
         for sig in self.sigs:
             repr_str = repr_str + str(sig) + "\n"
+
+        repr_str += "STATUS:\n"
+        for status in self.status:
+            repr_str = repr_str + str(status) + "\n"
 
         repr_str += "END\n"
 

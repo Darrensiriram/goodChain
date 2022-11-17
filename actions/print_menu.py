@@ -1,8 +1,11 @@
+import pickle
+
 from actions import check_balance
 from actions import transferCoins
 from database_actions import login
 import os
 from time import sleep
+
 
 def print_menu_loggedIn(auth_user, connection):
     cur = connection.cursor()
@@ -13,9 +16,8 @@ def print_menu_loggedIn(auth_user, connection):
     2 - Check the Balance
     3 - Explore the Chain
     4 - Check the Pool 
-    5 - Cancel a transaction
-    6 - Mine a Block
-    7 - Log out
+    5 - Mine a Block
+    6 - Log out
     """)
 
 
@@ -24,17 +26,16 @@ def actions(auth_user, connection):
         print_menu_loggedIn(auth_user, connection)
         response = int(input("What would u like to do? \n"))
         if response == 1:
-            os.system('cls')
             chosen_user = input("please enter the username: ")
             amount = int(input("please specify the coin amount: "))
             transactionfee = int(input("please enter a transaction fee: "))
-            transferCoinsobject = transferCoins.transfercoins(connection, auth_user, chosen_user, amount, transactionfee)
+            transferCoinsobject = transferCoins.transfercoins(connection, auth_user, chosen_user, amount,
+                                                              transactionfee)
             tx = transferCoinsobject.createTx(amount, transactionfee)
             transferCoinsobject.save_transaction_in_the_pool(tx)
             print("Coins have been transferred")
             continue
         elif response == 2:
-            os.system('cls')
             balanceObject = check_balance.balance(connection, auth_user)
             currentBalance = balanceObject.get_current_balance()[0]
             print(f"Current coins: {currentBalance}")
@@ -44,14 +45,24 @@ def actions(auth_user, connection):
             print("Explore the chain")
             continue
         elif response == 4:
-            print("Check the pool")
-            continue
+            pool = []
+            loadfile = open("pool.dat", "rb")
+            try:
+                while True:
+                    data = pickle.load(loadfile)
+                    pool.append(data)
+            except EOFError:
+                pass
+            print(pool)
+            sleep(4)
+        # elif response == 5:
+        #     print("Cancel a transaction")
+        #     tcObject = transferCoins.transfercoins(connection, auth_user)
+        #     transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject)
+        #     break
         elif response == 5:
-            print("Cancel a transaction")
-            continue
-        elif response == 6:
             print("Mine a block")
             continue
-        elif response == 7:
+        elif response == 6:
             print("Log out")
             break

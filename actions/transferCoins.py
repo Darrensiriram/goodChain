@@ -6,7 +6,7 @@ from blockchainActions.Transaction import *
 
 class transfercoins:
 
-    def __init__(self, connection, auth_user, chosen_user, amount, transactionfee):
+    def __init__(self, connection, auth_user, chosen_user="", amount=0, transactionfee=0):
         self.connection = connection
         self.auth_user = auth_user
         self.chosen_user = chosen_user
@@ -20,7 +20,11 @@ class transfercoins:
         Tx1.add_input(sender_user_pbc_key, amount)
         Tx1.add_output(receiver_user_pbc_key, amount - transactionfee)
         Tx1.sign(sender_user_pk_key)
-        return Tx1.is_valid()
+        if Tx1.is_valid():
+            Tx1.add_status("Valid")
+        else:
+            Tx1.add_status("Invalid")
+        return Tx1
 
     def get_key_credentials_current_user(self):
         cur = self.connection.cursor()
@@ -46,13 +50,13 @@ class transfercoins:
 
     @staticmethod
     def save_transaction_in_the_pool(transaction):
-        savefile = open("pool.dat", "wb")
+        savefile = open("pool.dat", "ab")
         pickle.dump(transaction, savefile)
         savefile.close()
 
     @staticmethod
     def verify_transaction_in_the_pool(savefile):
-        loadfile = open("pool", "rb")
+        loadfile = open("pool.dat", "rb")
         new_tx = pickle.load(loadfile)
 
         if new_tx.is_valid:
@@ -63,3 +67,21 @@ class transfercoins:
             print("Fail!")
         loadfile.close()
         return status
+    def cancel_transaction_in_the_pool(self):
+        trans = []
+        current_user_pk_key, current_user_pbc_key = self.get_key_credentials_current_user()
+        # print(current_user_pbc_key)
+        with open("pool.dat", "rb") as file:
+            try:
+                while True:
+                    loadPickle = pickle.load(file)
+                    trans.append(loadPickle)
+                    trans.append(counterPool)
+            except EOFError:
+                pass
+
+        for item in trans:
+            pbc_key_from_file = item.inputs[0][0]
+            print(pbc_key_from_file)
+
+        # print(trans)
