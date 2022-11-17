@@ -1,5 +1,9 @@
+import pickle
+
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from blockchainActions.Transaction import *
+
+
 class transfercoins:
 
     def __init__(self, connection, auth_user, chosen_user, amount, transactionfee):
@@ -39,3 +43,20 @@ class transfercoins:
         encoded_pbKey = public_key.encode('UTF-8')
         deserializedkey = load_pem_private_key(encoded_pk, password=None)
         return deserializedkey, encoded_pbKey
+
+    @staticmethod
+    def save_transaction_in_the_pool(transaction):
+        savefile = open("pool.dat", "wb")
+        pickle.dump(transaction, savefile)
+        savefile.close()
+
+    @staticmethod
+    def verify_transaction_in_the_pool(savefile):
+        loadfile = open("pool", "rb")
+        new_tx = pickle.load(loadfile)
+
+        if new_tx.is_valid:
+            print("Success! Loaded tx is valid")
+        else:
+            print("Fail!")
+        loadfile.close()
