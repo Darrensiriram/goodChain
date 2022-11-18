@@ -56,10 +56,11 @@ def actions(auth_user, connection):
             print(pool)
             sleep(4)
         elif response == 5:
-            print("Cancel a transaction")
+            print("Cancel a transaction\n")
             tcObject = transferCoins.transfercoins(connection, auth_user)
             transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject)
-            break
+            sleep(2)
+            continue
         elif response == 6:
             print("Mine a block")
             continue
