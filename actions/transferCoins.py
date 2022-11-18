@@ -76,12 +76,11 @@ class transfercoins:
                 while True:
                     loadPickle = pickle.load(file)
                     trans.append(loadPickle)
-                    trans.append(counterPool)
             except EOFError:
                 pass
 
-        for item in trans:
-            pbc_key_from_file = item.inputs[0][0]
-            print(pbc_key_from_file)
+        # for item in trans:
+        #     pbc_key_from_file = item.inputs[0][0]
+        #     print(pbc_key_from_file)
 
         # print(trans)

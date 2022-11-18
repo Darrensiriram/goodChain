@@ -1,5 +1,4 @@
 import pickle
-
 from actions import check_balance
 from actions import transferCoins
 from database_actions import login
@@ -16,8 +15,9 @@ def print_menu_loggedIn(auth_user, connection):
     2 - Check the Balance
     3 - Explore the Chain
     4 - Check the Pool 
-    5 - Mine a Block
-    6 - Log out
+    5 - Cancel a transaction
+    6 - Mine a Block
+    7 - Log out
     """)
 
 
@@ -55,14 +55,14 @@ def actions(auth_user, connection):
                 pass
             print(pool)
             sleep(4)
-        # elif response == 5:
-        #     print("Cancel a transaction")
-        #     tcObject = transferCoins.transfercoins(connection, auth_user)
-        #     transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject)
-        #     break
         elif response == 5:
+            print("Cancel a transaction")
+            tcObject = transferCoins.transfercoins(connection, auth_user)
+            transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject)
+            break
+        elif response == 6:
             print("Mine a block")
             continue
-        elif response == 6:
+        elif response == 7:
             print("Log out")
             break
