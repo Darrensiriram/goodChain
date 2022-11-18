@@ -23,6 +23,10 @@ class login:
             return None
         return result
 
+    def set_auth_user(self):
+        global auth_user
+        auth_user = 0
+
     def get_current_username(self):
         cur = self.connection.cursor()
         result = cur.execute('SELECT username FROM users WHERE id = ?', (auth_user)).fetchone()
@@ -41,7 +45,7 @@ class login:
             if b.checkpw(hashed_pwd, current_password):
                 auth_user = self.get_current_id(self.username)[0]
                 actions(auth_user, self.connection)
+                auth_user = 0
             else:
                 print("Password is incorrect")
                 sleep(4)
-
