@@ -30,9 +30,9 @@ def startMenu():
             password = getpass("Please fill your password in: ")
             print("Please wait while we validate our chain")
             loginUser = login.login(connection, username, password)
-            # sleep(5)
-            # if loginUser.validateBlock() == True:
-            #     print("chain has been verified")
+            sleep(5)
+            if loginUser.validateBlock() == True:
+                print("chain has been verified")
             loginUser.loginUser()
         elif response == 2:
              mine_actions.explore_chain()
