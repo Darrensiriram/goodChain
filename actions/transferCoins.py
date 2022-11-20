@@ -1,5 +1,5 @@
 import pickle
-
+from time import sleep
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from blockchainActions.Transaction import *
 
@@ -67,20 +67,59 @@ class transfercoins:
             print("Fail!")
         loadfile.close()
         return status
+
     def cancel_transaction_in_the_pool(self):
         trans = []
-        current_user_pk_key, current_user_pbc_key = self.get_key_credentials_current_user()
-        # print(current_user_pbc_key)
         with open("pool.dat", "rb") as file:
             try:
                 while True:
-                    loadPickle = pickle.load(file)
-                    trans.append(loadPickle)
+                    trans.append(pickle.load(file))
             except EOFError:
                 pass
+        #fill the list for editing
+        counter = 0
+        for i in trans:
+          print(f"TRANSACTION: {counter}")
+          print(i)
+          counter += 1
+        sleep(2)
+        while True:
+            chosenT = int(input("Please choose which transaction u which to delete from the pool:  "))
+            if chosenT < len(trans):
+                trans.pop(chosenT)
+                break
+            else:
+                print("Option is invalid")
+                continue
 
-        # for item in trans:
-        #     pbc_key_from_file = item.inputs[0][0]
-        #     print(pbc_key_from_file)
+        f1 = open("pool.dat", 'rb+')
+        f1.seek(0)
+        f1.truncate()
 
-        # print(trans)
+        #updating the pool.dat file
+        for z in trans:
+            savefile = open("pool.dat", "ab+")
+            pickle.dump(z, savefile)
+
+
+    @staticmethod
+    def get_total_transaction_in_pool():
+        alltrans = []
+        with open("pool.dat", "rb") as f:
+            try:
+                while True:
+                    alltrans.append(pickle.load(f))
+            except EOFError:
+                pass
+        return len(alltrans)
+
+    @staticmethod
+    def get_transactions_in_pool():
+        alltrans = []
+        with open("pool.dat", "rb") as f:
+            try:
+                while True:
+                    alltrans.append(pickle.load(f))
+            except EOFError:
+                pass
+        return alltrans
