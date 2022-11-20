@@ -95,9 +95,31 @@ class transfercoins:
         f1 = open("pool.dat", 'rb+')
         f1.seek(0)
         f1.truncate()
-        #print(trans)
 
         #updating the pool.dat file
         for z in trans:
             savefile = open("pool.dat", "ab+")
             pickle.dump(z, savefile)
+
+
+    @staticmethod
+    def get_total_transaction_in_pool():
+        alltrans = []
+        with open("pool.dat", "rb") as f:
+            try:
+                while True:
+                    alltrans.append(pickle.load(f))
+            except EOFError:
+                pass
+        return len(alltrans)
+
+    @staticmethod
+    def get_transactions_in_pool():
+        alltrans = []
+        with open("pool.dat", "rb") as f:
+            try:
+                while True:
+                    alltrans.append(pickle.load(f))
+            except EOFError:
+                pass
+        return alltrans
