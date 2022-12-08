@@ -3,6 +3,7 @@ from time import sleep
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from blockchainActions.Transaction import *
 
+poolPath = 'data/pool.dat'
 
 class transfercoins:
 
@@ -50,13 +51,13 @@ class transfercoins:
 
     @staticmethod
     def save_transaction_in_the_pool(transaction):
-        savefile = open("pool.dat", "ab")
+        savefile = open(poolPath, "ab")
         pickle.dump(transaction, savefile)
         savefile.close()
 
     @staticmethod
     def verify_transaction_in_the_pool(savefile):
-        loadfile = open("pool.dat", "rb")
+        loadfile = open(poolPath, "rb")
         new_tx = pickle.load(loadfile)
 
         if new_tx.is_valid:
@@ -70,7 +71,7 @@ class transfercoins:
 
     def cancel_transaction_in_the_pool(self):
         trans = []
-        with open("pool.dat", "rb") as file:
+        with open(poolPath, "rb") as file:
             try:
                 while True:
                     trans.append(pickle.load(file))
@@ -92,20 +93,20 @@ class transfercoins:
                 print("Option is invalid")
                 continue
 
-        f1 = open("pool.dat", 'rb+')
+        f1 = open(poolPath, 'rb+')
         f1.seek(0)
         f1.truncate()
 
         #updating the pool.dat file
         for z in trans:
-            savefile = open("pool.dat", "ab+")
+            savefile = open(poolPath, "ab+")
             pickle.dump(z, savefile)
 
 
     @staticmethod
     def get_total_transaction_in_pool():
         alltrans = []
-        with open("pool.dat", "rb") as f:
+        with open(poolPath, "rb") as f:
             try:
                 while True:
                     alltrans.append(pickle.load(f))
@@ -116,7 +117,7 @@ class transfercoins:
     @staticmethod
     def get_transactions_in_pool():
         alltrans = []
-        with open("pool.dat", "rb") as f:
+        with open(poolPath, "rb") as f:
             try:
                 while True:
                     alltrans.append(pickle.load(f))

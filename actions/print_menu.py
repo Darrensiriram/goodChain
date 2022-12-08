@@ -6,6 +6,7 @@ from database_actions import login
 import os
 from time import sleep
 
+poolPath = 'data/pool.dat'
 
 def print_menu_loggedIn(auth_user, connection):
     cur = connection.cursor()
@@ -46,12 +47,12 @@ def actions(auth_user, connection):
                 tx = transferCoinsobject.createTx(amount, transactionfee)
                 transferCoinsobject.save_transaction_in_the_pool(tx)
                 print("Coins have been transferred")
-                continue
+            continue
         elif response == 2:
             currentBalance = checkBalanceObject.get_current_balance()[0]
             print(f"Current coins: {currentBalance}")
             sleep(2)
-            break
+            continue
         elif response == 3:
             print("Explore the chain")
             mining_actions.mine_actions.explore_chain()
@@ -59,7 +60,7 @@ def actions(auth_user, connection):
             continue
         elif response == 4:
             pool = []
-            loadfile = open("pool.dat", "rb")
+            loadfile = open(poolPath, "rb")
             try:
                 while True:
                     data = pickle.load(loadfile)

@@ -8,7 +8,7 @@ from database_actions import signup as s
 from database_actions import connectionSQL as dbcreate
 
 connection = sqlite3.Connection('database_actions/goodchain.db')
-os.system("touch block.dat")
+os.system("touch data/block.dat")
 
 def print_public_menu():
     print("""
@@ -28,11 +28,7 @@ def startMenu():
         if response == 1:
             username = input("Fill in your username please: ")
             password = getpass("Please fill your password in: ")
-            print("Please wait while we validate our chain")
             loginUser = login.login(connection, username, password)
-            sleep(5)
-            if loginUser.validateBlock() == True:
-                print("chain has been verified")
             loginUser.loginUser()
         elif response == 2:
              mine_actions.explore_chain()

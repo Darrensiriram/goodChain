@@ -10,7 +10,7 @@ import os
 MIN_MINING_TIME = 30
 MAX_MINING_TIME = 60
 DIFFICULTY_LEVEL = 2
-
+poolPath = 'data/pool.dat'
 
 class mine_actions:
     def __init__(self, transaction):
@@ -36,7 +36,7 @@ class mine_actions:
 
     @staticmethod
     def save_to_chain(block):
-        savefile = open("block.dat", "ab+")
+        savefile = open("../data/block.dat", "ab+")
         pickle.dump(block, savefile)
         savefile.close()
 
@@ -64,6 +64,9 @@ class mine_actions:
     @staticmethod
     def explore_chain():
         blockchain = mine_actions.get_block_chain()
+        if len(blockchain) == 0:
+           return print("The chain is empty")
+
         i = 0
         genesis = lambda x: 'Genesis' if (i == 0) else x
         for x in blockchain:
@@ -136,7 +139,7 @@ class mine_actions:
             tx_to_cancel.append(x)
 
         allTx = []
-        with open("pool.dat", "rb+") as f:
+        with open("data/pool.dat", "rb+") as f:
             try:
                 while True:
                     allTx.append(pickle.load(f))
