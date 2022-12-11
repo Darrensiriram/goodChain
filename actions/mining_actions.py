@@ -11,6 +11,7 @@ MIN_MINING_TIME = 30
 MAX_MINING_TIME = 60
 DIFFICULTY_LEVEL = 2
 poolPath = 'data/pool.dat'
+blockPath = 'data/block.dat'
 
 class mine_actions:
     def __init__(self, transaction):
@@ -36,7 +37,7 @@ class mine_actions:
 
     @staticmethod
     def save_to_chain(block):
-        savefile = open("../data/block.dat", "ab+")
+        savefile = open(blockPath, "ab+")
         pickle.dump(block, savefile)
         savefile.close()
 
@@ -53,7 +54,7 @@ class mine_actions:
     @staticmethod
     def get_block_chain():
         blockchain = []
-        with open("block.dat", "rb") as f:
+        with open(blockPath, "rb") as f:
             try:
                 while True:
                     blockchain.append(pickle.load(f))
@@ -139,7 +140,7 @@ class mine_actions:
             tx_to_cancel.append(x)
 
         allTx = []
-        with open("data/pool.dat", "rb+") as f:
+        with open(poolPath, "rb+") as f:
             try:
                 while True:
                     allTx.append(pickle.load(f))
