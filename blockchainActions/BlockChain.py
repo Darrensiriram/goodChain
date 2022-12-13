@@ -2,7 +2,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 import pickle
 
-
+blockPath = 'data/block.dat'
 class CBlock:
     data = None
     previousHash = None
@@ -29,7 +29,7 @@ class CBlock:
     def get_prev_block():
         block = []
         count = 0
-        with open("block.dat", "rb") as file:
+        with open(blockPath, "rb") as file:
             try:
                 while True:
                     loadPickle = pickle.load(file)

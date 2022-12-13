@@ -32,22 +32,28 @@ def actions(auth_user, connection):
             chosen_user = input("please enter the username: ")
             amount = int(input("please specify the coin amount: "))
             transactionfee = int(input("please enter a transaction fee: "))
-            current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)[0]
-            if amount < transactionfee:
-                print("Oops ur amount is smaller then transaction fee")
-                print("Try again....")
+            current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)
+            if not current_balance:
+                print("There is no transaction made, Username is not found")
                 sleep(2)
-            elif current_balance < amount:
-                print("Oops ur balance is smaller then than the amount specified")
-                print("Try again....")
-                sleep(2)
+                break
             else:
-                transferCoinsobject = transferCoins.transfercoins(connection, auth_user, chosen_user, amount,
-                                                                  transactionfee)
-                tx = transferCoinsobject.createTx(amount, transactionfee)
-                transferCoinsobject.save_transaction_in_the_pool(tx)
-                print("Coins have been transferred")
-            continue
+                current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)[0]
+                if amount < transactionfee:
+                    print("Oops ur amount is smaller then transaction fee")
+                    print("Try again....")
+                    sleep(2)
+                elif current_balance < amount:
+                    print("Oops ur balance is smaller then than the amount specified")
+                    print("Try again....")
+                    sleep(2)
+                else:
+                    transferCoinsobject = transferCoins.transfercoins(connection, auth_user, chosen_user, amount,
+                                                                      transactionfee)
+                    tx = transferCoinsobject.createTx(amount, transactionfee)
+                    transferCoinsobject.save_transaction_in_the_pool(tx)
+                    print("Coins have been transferred")
+                continue
         elif response == 2:
             currentBalance = checkBalanceObject.get_current_balance()[0]
             print(f"Current coins: {currentBalance}")
@@ -85,9 +91,9 @@ def actions(auth_user, connection):
             elif loginObject.get_current_connected_count()[0] < 4:
                 print("sorry not enough members have valided the chain")
                 sleep(2)
-            elif loginObject.get_current_time():
-                print("Whoops u can not mine so fast in a row.")
-                sleep(2)
+            # elif loginObject.get_current_time():
+            #     print("Whoops u can not mine so fast in a row.")
+            #     sleep(2)
             else:
                 print("Let's mine a block")
                 specifyBlocks = mining_actions.mine_actions.load_all_transaction_per_block()
