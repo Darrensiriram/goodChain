@@ -37,9 +37,3 @@ class CBlock:
                     count = count + 1
             except EOFError:
                 pass
-        # print(block[0])
-        # if len(block) == 0:
-        #     return None
-        # elif count == 0:
-        #     return block[0]
-        # return block[count]

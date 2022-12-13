@@ -7,6 +7,7 @@ import os
 from time import sleep
 
 poolPath = 'data/pool.dat'
+choiceList = ("1", "2", "3", '4','5','6','7')
 
 def print_menu_loggedIn(auth_user, connection):
     cur = connection.cursor()
@@ -27,8 +28,11 @@ def actions(auth_user, connection):
     checkBalanceObject = check_balance.balance(connection, auth_user)
     while True:
         print_menu_loggedIn(auth_user, connection)
-        response = int(input("What would u like to do? \n"))
-        if response == 1:
+        response = input("What would u like to do? \n")
+        if response not in choiceList:
+            print("Please select a valid option")
+            sleep(2)
+        elif int(response) == 1:
             chosen_user = input("please enter the username: ")
             amount = int(input("please specify the coin amount: "))
             transactionfee = int(input("please enter a transaction fee: "))
@@ -36,7 +40,7 @@ def actions(auth_user, connection):
             if not current_balance:
                 print("There is no transaction made, Username is not found")
                 sleep(2)
-                break
+                continue
             else:
                 current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)[0]
                 if amount < transactionfee:
@@ -54,17 +58,17 @@ def actions(auth_user, connection):
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
                 continue
-        elif response == 2:
+        elif int(response) == 2:
             currentBalance = checkBalanceObject.get_current_balance()[0]
             print(f"Current coins: {currentBalance}")
             sleep(2)
             continue
-        elif response == 3:
+        elif int(response) == 3:
             print("Explore the chain")
             mining_actions.mine_actions.explore_chain()
             sleep(2)
             continue
-        elif response == 4:
+        elif int(response) == 4:
             pool = []
             loadfile = open(poolPath, "rb")
             try:
@@ -76,13 +80,13 @@ def actions(auth_user, connection):
             print(pool)
             print(f"Total transactions in the pool: {len(pool)}")
             sleep(4)
-        elif response == 5:
+        elif int(response) == 5:
             print("Cancel a transaction\n")
             tcObject = transferCoins.transfercoins(connection, auth_user)
             transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject)
             sleep(2)
             continue
-        elif response == 6:
+        elif int(response) == 6:
             loginObject = login.login(connection)
             if transferCoins.transfercoins.get_total_transaction_in_pool() < 5:
                 print("There are not enough transaction in the pool.")
@@ -117,6 +121,6 @@ def actions(auth_user, connection):
                 sleep(2)
                 # print(mining_actions.mine_actions.get_block_chain())
             continue
-        elif response == 7:
+        elif int(response) == 7:
             print("Log out")
             break
