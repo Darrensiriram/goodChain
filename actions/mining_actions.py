@@ -146,7 +146,6 @@ class mine_actions:
                     allTx.append(pickle.load(f))
             except EOFError:
                 pass
-
         i = 0
         while i < len(tx_to_cancel):
             j = 0
