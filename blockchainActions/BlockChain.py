@@ -7,6 +7,7 @@ class CBlock:
     data = None
     previousHash = None
     previousBlock = None
+    blockHash = None
 
     def __init__(self, data, previousBlock):
         self.data = data
@@ -22,8 +23,14 @@ class CBlock:
 
     def is_valid(self):
         if self.previousBlock == None:
-            return True
-        return self.previousBlock.computeHash() == self.previousHash
+            if self.blockHash == self.computeHash():
+                return True
+            else:
+                return False
+        else:
+            current_block_validity = self.blockHash == self.computeHash()
+            previous_block_validity = self.previousBlock.is_valid()
+            return current_block_validity and previous_block_validity
 
     @staticmethod
     def get_prev_block():

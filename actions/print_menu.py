@@ -33,14 +33,17 @@ def actions(auth_user, connection):
             print("Please select a valid option")
             sleep(2)
         elif int(response) == 1:
-            chosen_user = input("please enter the username: ")
-            amount = int(input("please specify the coin amount: "))
-            transactionfee = int(input("please enter a transaction fee: "))
-            current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)
-            if not current_balance:
-                print("There is no transaction made, Username is not found")
-                sleep(2)
-                continue
+            try:
+                chosen_user = input("please enter the username: ")
+                amount = int(input("please specify the coin amount: "))
+                transactionfee = int(input("please enter a transaction fee: "))
+                current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)
+                if not current_balance:
+                    print("There is no transaction made, Username is not found")
+                    sleep(2)
+                    continue
+            except:
+                print("Invalid option")
             else:
                 current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)[0]
                 if amount < transactionfee:
@@ -111,7 +114,8 @@ def actions(auth_user, connection):
                         break
                     else:
                         if chosenInput < len(specifyBlocks):
-                            # mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
+                            mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
+                            exit();
                             mining_actions.mine_actions.mine_block(specifyBlocks, chosenInput)
                             mining_actions.mine_actions.save_to_chain(specifyBlocks[0][0])
                             loginObject.set_default_value_connectivity()
