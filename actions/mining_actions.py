@@ -140,45 +140,12 @@ class mine_actions:
             tx_to_cancel.append(x)
 
         for y in tx_to_cancel:
-            transfercoins.cancel_transaction_in_the_pool(y)
-
-        allTx = []
-        with open(poolPath, "rb+") as f:
-            try:
-                while True:
-                    allTx.append(pickle.load(f))
-            except EOFError:
-                pass
-        print(allTx)
-        # i
-        # = 0
-        # while i < len(tx_to_cancel):
-        #     j = 0
-        #     while j < len(allTx):
-        #         if tx_to_cancel[i].inputs[i] == allTx[j].inputs[j]:
-        #             allTx.remove(allTx[j])
-        #             j += 1
-        #         i += 1
-        # # print(tx_to_cancel)
-        # print(len(tx_to_cancel))
-        # print('*' * 100)
-        # # print(allTx)
-        # print(len(allTx))
-
-
-
-@staticmethod
-def compare_and_remove(list1, list2):
-    common = []
-    for elem1 in list1:
-        for elem2 in list2:
-            if elem2.inputs[i] == elem1.inputs[i]:
-                common.append(elem1)
-
-
-    # for elem in common:
-    #     list1.remove(elem)
-    #     list2.remove(elem)
-
-    return list1, list2, common
-
+            transfercoins.delete_transaction_in_pool(transaction=y)
+        print()
+        # allTx = []
+        # with open(poolPath, "rb+") as f:
+        #     try:
+        #         while True:
+        #             allTx.append(pickle.load(f))
+        #     except EOFError:
+        #         pass

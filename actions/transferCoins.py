@@ -90,7 +90,7 @@ class transfercoins:
         while True:
             chosenT = int(input("Please choose which transaction u which to delete from the pool:  "))
             if chosenT < len(trans):
-                result = pluckStr(trans[chosenT].userId,self.auth_user)
+                result = pluckStr(trans[chosenT].userId, self.auth_user)
                 if result == self.auth_user:
                     trans.pop(chosenT)
                 else:
@@ -108,6 +108,17 @@ class transfercoins:
         for z in trans:
             savefile = open(poolPath, "ab+")
             pickle.dump(z, savefile)
+
+    @staticmethod
+    def delete_transaction_in_pool(transaction):
+        allTransaction = transfercoins.get_transactions_in_pool()
+        counter = 0
+        for i in allTransaction:
+            print(f"TRANSACTION: {counter}")
+            print(i)
+            counter += 1
+        sleep(2)
+    # todo: check of de transactie overeenkomt, als dat het geval is plaats het in een nieuwe lijst. en vervolgens update je de pool.dat file
 
     @staticmethod
     def get_total_transaction_in_pool():

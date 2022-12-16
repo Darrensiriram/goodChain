@@ -6,9 +6,12 @@ from actions.mining_actions import *
 from database_actions import login
 from database_actions import signup as s
 from database_actions import connectionSQL as dbcreate
+import pathlib
 
 connection = sqlite3.Connection('database_actions/goodchain.db')
-os.system("touch data/block.dat")
+# os.system("touch data/block.dat")
+pathlib.Path('data/block.dat').touch()
+pathlib.Path('data/pool.dat').touch()
 
 choiceList = ("1", "2", "3", '4')
 def print_public_menu():

@@ -115,7 +115,7 @@ def actions(auth_user, connection):
                     else:
                         if chosenInput < len(specifyBlocks):
                             mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
-                            exit();
+                            exit()
                             mining_actions.mine_actions.mine_block(specifyBlocks, chosenInput)
                             mining_actions.mine_actions.save_to_chain(specifyBlocks[0][0])
                             loginObject.set_default_value_connectivity()
