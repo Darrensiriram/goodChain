@@ -20,7 +20,7 @@ class mine_actions:
     @staticmethod
     def create_block(transaction: list, prevBlock: list = []):
         global root
-        if not os.path.isfile("../block.dat"):
+        if not os.path.isfile(blockPath):
             root = TxBlock(None)
             i = 0
             while i <= 5:
@@ -138,27 +138,4 @@ class mine_actions:
         tx_to_cancel = []
         for x in blockchain:
             tx_to_cancel.append(x)
-
-        allTx = []
-        with open(poolPath, "rb+") as f:
-            try:
-                while True:
-                    allTx.append(pickle.load(f))
-            except EOFError:
-                pass
-        i = 0
-        while i < len(tx_to_cancel):
-            j = 0
-            while j < len(allTx):
-                if tx_to_cancel[i].inputs[i] == allTx[j].inputs[j]:
-                    allTx.remove(allTx[j])
-                    j += 1
-                i += 1
-        # print(tx_to_cancel)
-        print(len(tx_to_cancel))
-        print('*' * 100)
-        # print(allTx)
-        print(len(allTx))
-
-
-
+        transfercoins.delete_transaction_in_pool(tx_to_cancel)

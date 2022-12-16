@@ -41,7 +41,6 @@ class Tx:
         self.sigs.append(newsig)
 
     def is_valid(self):
-
         if self.type == REWARD:
             if len(self.inputs) != 0 and len(self.outputs) != 1:
                 return False
@@ -85,7 +84,6 @@ class Tx:
         data.append(self.outputs)
         data.append(self.reqd)
         data.append(self.status)
-        data.append(self.userId)
         return data
 
     def __repr__(self):

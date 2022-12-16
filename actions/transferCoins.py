@@ -90,7 +90,7 @@ class transfercoins:
         while True:
             chosenT = int(input("Please choose which transaction u which to delete from the pool:  "))
             if chosenT < len(trans):
-                result = pluckStr(trans[chosenT].userId,self.auth_user)
+                result = pluckStr(trans[chosenT].userId, self.auth_user)
                 if result == self.auth_user:
                     trans.pop(chosenT)
                 else:
@@ -106,6 +106,31 @@ class transfercoins:
 
         # updating the pool.dat file
         for z in trans:
+            savefile = open(poolPath, "ab+")
+            pickle.dump(z, savefile)
+
+    @staticmethod
+    def delete_transaction_in_pool(transaction):
+        allTx = []
+        with open(poolPath, "rb+") as f:
+            try:
+                while True:
+                    allTx.append(pickle.load(f))
+            except EOFError:
+                pass
+        indexofTransaction = 0
+        for x in allTx:
+            if indexofTransaction <= len(transaction) :
+                if (transaction[indexofTransaction].sigs == allTx[0].sigs):
+                    allTx.pop(0)
+                    indexofTransaction += 1
+
+        f1 = open(poolPath, 'rb+')
+        f1.seek(0)
+        f1.truncate()
+
+        # updating the pool.dat file
+        for z in allTx:
             savefile = open(poolPath, "ab+")
             pickle.dump(z, savefile)
 
