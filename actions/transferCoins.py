@@ -111,14 +111,28 @@ class transfercoins:
 
     @staticmethod
     def delete_transaction_in_pool(transaction):
-        allTransaction = transfercoins.get_transactions_in_pool()
-        counter = 0
-        for i in allTransaction:
-            print(f"TRANSACTION: {counter}")
-            print(i)
-            counter += 1
-        sleep(2)
-    # todo: check of de transactie overeenkomt, als dat het geval is plaats het in een nieuwe lijst. en vervolgens update je de pool.dat file
+        allTx = []
+        with open(poolPath, "rb+") as f:
+            try:
+                while True:
+                    allTx.append(pickle.load(f))
+            except EOFError:
+                pass
+        indexofTransaction = 0
+        for x in allTx:
+            if indexofTransaction <= len(transaction) :
+                if (transaction[indexofTransaction].sigs == allTx[0].sigs):
+                    allTx.pop(0)
+                    indexofTransaction += 1
+
+        f1 = open(poolPath, 'rb+')
+        f1.seek(0)
+        f1.truncate()
+
+        # updating the pool.dat file
+        for z in allTx:
+            savefile = open(poolPath, "ab+")
+            pickle.dump(z, savefile)
 
     @staticmethod
     def get_total_transaction_in_pool():

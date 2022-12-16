@@ -109,13 +109,13 @@ def actions(auth_user, connection):
                     print(f"[{i}] : {x}")
                     i += 1
                 while True:
+                    #todo: try except om heen maken
                     chosenInput = int(input("Please choose a block of transactions: "))
                     if chosenInput == None:
                         break
                     else:
                         if chosenInput < len(specifyBlocks):
                             mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
-                            exit()
                             mining_actions.mine_actions.mine_block(specifyBlocks, chosenInput)
                             mining_actions.mine_actions.save_to_chain(specifyBlocks[0][0])
                             loginObject.set_default_value_connectivity()
