@@ -129,4 +129,4 @@ dmypy.json
 # Pyre type checker
 .pyre/
 /database_actions/goodchain.db
-/data/pool.dat
+/pool.dat

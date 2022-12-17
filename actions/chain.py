@@ -4,7 +4,7 @@ import pickle
 from blockchainActions.TxBlock import *
 #todo: get all the transaction of the pool
 alltrans = []
-with open("../data/pool.dat", "rb") as f:
+with open("../pool.dat","rb") as f:
     try:
         while True:
             alltrans.append(pickle.load(f))
