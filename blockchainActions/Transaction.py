@@ -18,12 +18,16 @@ class Tx:
         self.sigs = []
         self.reqd = []
         self.status = []
+        self.userId = []
 
     def add_input(self, from_addr, amount):
         self.inputs.append((from_addr, amount))
 
     def add_output(self, to_addr, amount):
         self.outputs.append((to_addr, amount))
+
+    def add_userId(self, id):
+        self.userId.append(id)
 
     def add_reqd(self, addr):
         self.reqd.append(addr)
@@ -37,7 +41,6 @@ class Tx:
         self.sigs.append(newsig)
 
     def is_valid(self):
-
         if self.type == REWARD:
             if len(self.inputs) != 0 and len(self.outputs) != 1:
                 return False
@@ -104,6 +107,10 @@ class Tx:
         repr_str += "STATUS:\n"
         for status in self.status:
             repr_str = repr_str + str(status) + "\n"
+
+        repr_str += "Created by userID:\n"
+        for id in self.userId:
+            repr_str = repr_str + str(id) + "\n"
 
         repr_str += "END\n"
 

@@ -2,6 +2,9 @@ import pickle
 from time import sleep
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from blockchainActions.Transaction import *
+from utils.helper import *
+
+poolPath = 'data/pool.dat'
 
 
 class transfercoins:
@@ -20,6 +23,7 @@ class transfercoins:
         Tx1.add_input(sender_user_pbc_key, amount)
         Tx1.add_output(receiver_user_pbc_key, amount - transactionfee)
         Tx1.sign(sender_user_pk_key)
+        Tx1.add_userId(self.auth_user)
         if Tx1.is_valid():
             Tx1.add_status("Valid")
         else:
@@ -50,13 +54,13 @@ class transfercoins:
 
     @staticmethod
     def save_transaction_in_the_pool(transaction):
-        savefile = open("pool.dat", "ab")
+        savefile = open(poolPath, "ab")
         pickle.dump(transaction, savefile)
         savefile.close()
 
     @staticmethod
     def verify_transaction_in_the_pool(savefile):
-        loadfile = open("pool.dat", "rb")
+        loadfile = open(poolPath, "rb")
         new_tx = pickle.load(loadfile)
 
         if new_tx.is_valid:
@@ -70,42 +74,70 @@ class transfercoins:
 
     def cancel_transaction_in_the_pool(self):
         trans = []
-        with open("pool.dat", "rb") as file:
+        with open(poolPath, "rb") as file:
             try:
                 while True:
                     trans.append(pickle.load(file))
             except EOFError:
                 pass
-        #fill the list for editing
+        # fill the list for editing
         counter = 0
         for i in trans:
-          print(f"TRANSACTION: {counter}")
-          print(i)
-          counter += 1
+            print(f"TRANSACTION: {counter}")
+            print(i)
+            counter += 1
         sleep(2)
         while True:
             chosenT = int(input("Please choose which transaction u which to delete from the pool:  "))
             if chosenT < len(trans):
-                trans.pop(chosenT)
+                result = pluckStr(trans[chosenT].userId, self.auth_user)
+                if result == self.auth_user:
+                    trans.pop(chosenT)
+                else:
+                    print("U can not delete an transaction that is not yours!")
                 break
             else:
                 print("Option is invalid")
                 continue
 
-        f1 = open("pool.dat", 'rb+')
+        f1 = open(poolPath, 'rb+')
         f1.seek(0)
         f1.truncate()
 
-        #updating the pool.dat file
+        # updating the pool.dat file
         for z in trans:
-            savefile = open("pool.dat", "ab+")
+            savefile = open(poolPath, "ab+")
             pickle.dump(z, savefile)
 
+    @staticmethod
+    def delete_transaction_in_pool(transaction):
+        allTx = []
+        with open(poolPath, "rb+") as f:
+            try:
+                while True:
+                    allTx.append(pickle.load(f))
+            except EOFError:
+                pass
+        indexofTransaction = 0
+        for x in allTx:
+            if indexofTransaction <= len(transaction) :
+                if (transaction[indexofTransaction].sigs == allTx[0].sigs):
+                    allTx.pop(0)
+                    indexofTransaction += 1
+
+        f1 = open(poolPath, 'rb+')
+        f1.seek(0)
+        f1.truncate()
+
+        # updating the pool.dat file
+        for z in allTx:
+            savefile = open(poolPath, "ab+")
+            pickle.dump(z, savefile)
 
     @staticmethod
     def get_total_transaction_in_pool():
         alltrans = []
-        with open("pool.dat", "rb") as f:
+        with open(poolPath, "rb") as f:
             try:
                 while True:
                     alltrans.append(pickle.load(f))
@@ -116,7 +148,7 @@ class transfercoins:
     @staticmethod
     def get_transactions_in_pool():
         alltrans = []
-        with open("pool.dat", "rb") as f:
+        with open(poolPath, "rb") as f:
             try:
                 while True:
                     alltrans.append(pickle.load(f))
