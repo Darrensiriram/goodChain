@@ -18,7 +18,7 @@ class login:
     @staticmethod
     def validateBlock():
         allblocks = []
-        with open("data/block.dat", "rb") as f:
+        with open("block.dat", "rb") as f:
             try:
                 while True:
                     allblocks.append(pickle.load(f))

@@ -10,8 +10,7 @@ import os
 MIN_MINING_TIME = 30
 MAX_MINING_TIME = 60
 DIFFICULTY_LEVEL = 2
-poolPath = 'data/pool.dat'
-blockPath = 'data/block.dat'
+
 
 class mine_actions:
     def __init__(self, transaction):
@@ -20,7 +19,7 @@ class mine_actions:
     @staticmethod
     def create_block(transaction: list, prevBlock: list = []):
         global root
-        if not os.path.isfile(blockPath):
+        if not os.path.isfile("../block.dat"):
             root = TxBlock(None)
             i = 0
             while i <= 5:
@@ -37,7 +36,7 @@ class mine_actions:
 
     @staticmethod
     def save_to_chain(block):
-        savefile = open(blockPath, "ab+")
+        savefile = open("block.dat", "ab+")
         pickle.dump(block, savefile)
         savefile.close()
 
@@ -54,7 +53,7 @@ class mine_actions:
     @staticmethod
     def get_block_chain():
         blockchain = []
-        with open(blockPath, "rb") as f:
+        with open("block.dat", "rb") as f:
             try:
                 while True:
                     blockchain.append(pickle.load(f))
@@ -65,9 +64,6 @@ class mine_actions:
     @staticmethod
     def explore_chain():
         blockchain = mine_actions.get_block_chain()
-        if len(blockchain) == 0:
-           return print("The chain is empty")
-
         i = 0
         genesis = lambda x: 'Genesis' if (i == 0) else x
         for x in blockchain:
@@ -138,4 +134,28 @@ class mine_actions:
         tx_to_cancel = []
         for x in blockchain:
             tx_to_cancel.append(x)
-        transfercoins.delete_transaction_in_pool(tx_to_cancel)
+
+        allTx = []
+        with open("pool.dat", "rb+") as f:
+            try:
+                while True:
+                    allTx.append(pickle.load(f))
+            except EOFError:
+                pass
+
+        i = 0
+        while i < len(tx_to_cancel):
+            j = 0
+            while j < len(allTx):
+                if tx_to_cancel[i].inputs[i] == allTx[j].inputs[j]:
+                    allTx.remove(allTx[j])
+                    j += 1
+                i += 1
+        # print(tx_to_cancel)
+        print(len(tx_to_cancel))
+        print('*' * 100)
+        # print(allTx)
+        print(len(allTx))
+
+
+
