@@ -104,10 +104,6 @@ class Tx:
         for sig in self.sigs:
             repr_str = repr_str + str(sig) + "\n"
 
-        repr_str += "STATUS:\n"
-        for status in self.status:
-            repr_str = repr_str + str(status) + "\n"
-
         repr_str += "Created by userID:\n"
         for id in self.userId:
             repr_str = repr_str + str(id) + "\n"
