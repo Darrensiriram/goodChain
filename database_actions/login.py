@@ -82,11 +82,13 @@ class login:
     def get_current_time(self):
         cur = self.connection.cursor()
         db_time = cur.execute('SELECT currentTime FROM connectivity ').fetchone()[0]
-        atm = time.time()
-        if (atm + 1800) > db_time:
-            return True
-        else:
+        current_time = time.time()
+        three_min = 180
+        if current_time > (db_time + float(three_min)):
             return False
+        return True
+
+
 
     def update_time_when_mine(self):
         cur = self.connection.cursor()

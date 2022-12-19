@@ -7,7 +7,8 @@ import os
 from time import sleep
 
 poolPath = 'data/pool.dat'
-choiceList = ("1", "2", "3", '4','5','6','7')
+choiceList = ("1", "2", "3", '4', '5', '6', '7')
+
 
 def print_menu_loggedIn(auth_user, connection):
     cur = connection.cursor()
@@ -95,12 +96,12 @@ def actions(auth_user, connection):
                 print("There are not enough transaction in the pool.")
                 print(f"There are currently {transferCoins.transfercoins.get_total_transaction_in_pool()} in the pool.")
                 sleep(2)
-            elif loginObject.get_current_connected_count()[0] < 4:
-                print("sorry not enough members have valided the chain")
-                sleep(2)
-            # elif loginObject.get_current_time():
-            #     print("Whoops u can not mine so fast in a row.")
+            # elif loginObject.get_current_connected_count()[0] < 4:
+            #     print("sorry not enough members have valided the chain")
             #     sleep(2)
+            elif loginObject.get_current_time():
+                print("Whoops u can not mine so fast in a row.")
+                sleep(2)
             else:
                 print("Let's mine a block")
                 specifyBlocks = mining_actions.mine_actions.load_all_transaction_per_block()
@@ -109,19 +110,21 @@ def actions(auth_user, connection):
                     print(f"[{i}] : {x}")
                     i += 1
                 while True:
-                    #todo: try except om heen maken
-                    chosenInput = int(input("Please choose a block of transactions: "))
-                    if chosenInput == None:
-                        break
-                    else:
-                        if chosenInput < len(specifyBlocks):
-                            mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
-                            mining_actions.mine_actions.mine_block(specifyBlocks, chosenInput)
-                            mining_actions.mine_actions.save_to_chain(specifyBlocks[0][0])
-                            loginObject.set_default_value_connectivity()
-                            loginObject.update_time_when_mine()
-                            checkBalanceObject.update_balance()
+                    try:
+                        chosenInput = int(input("Please choose a block of transactions: "))
+                        if chosenInput == None:
                             break
+                        else:
+                            if chosenInput < len(specifyBlocks):
+                                mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
+                                mining_actions.mine_actions.mine_block(specifyBlocks, chosenInput)
+                                mining_actions.mine_actions.save_to_chain(specifyBlocks[0][0])
+                                loginObject.set_default_value_connectivity()
+                                loginObject.update_time_when_mine()
+                                checkBalanceObject.update_balance()
+                                break
+                    except:
+                        print("Oops That is not a valid option")
                 sleep(2)
                 # print(mining_actions.mine_actions.get_block_chain())
             continue
