@@ -135,7 +135,5 @@ class mine_actions:
 
     @staticmethod
     def clear_transaction_after_mining(blockchain):
-        tx_to_cancel = []
         for x in blockchain:
-            tx_to_cancel.append(x)
-        transfercoins.delete_transaction_in_pool(tx_to_cancel)
+            transfercoins.delete_transaction_in_pool(x)
