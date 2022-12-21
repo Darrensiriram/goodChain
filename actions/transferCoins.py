@@ -111,6 +111,7 @@ class transfercoins:
 
     @staticmethod
     def delete_transaction_in_pool(transaction):
+        newItems = []
         allTx = []
         with open(poolPath, "rb+") as f:
             try:
@@ -118,21 +119,22 @@ class transfercoins:
                     allTx.append(pickle.load(f))
             except EOFError:
                 pass
-        indexofTransaction = 0
+
+
         for x in allTx:
-            if indexofTransaction <= len(transaction) :
-                if (transaction[indexofTransaction].sigs == allTx[0].sigs):
-                    allTx.pop(0)
-                    indexofTransaction += 1
+            try:
+                if x.txid != transaction.txid:
+                    newItems.append(x)
+            except:
+                print("Try again")
 
         f1 = open(poolPath, 'rb+')
         f1.seek(0)
         f1.truncate()
-
-        # updating the pool.dat file
-        for z in allTx:
-            savefile = open(poolPath, "ab+")
-            pickle.dump(z, savefile)
+        for i in range(len(newItems)):
+            pickle.dump(newItems[i], f1)
+        else:
+            f1.close()
 
     @staticmethod
     def get_total_transaction_in_pool():

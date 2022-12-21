@@ -1,13 +1,13 @@
 from gzip import READ
 from operator import truediv
 from optparse import AmbiguousOptionError
+import uuid
 
 REWARD_VALUE = 25.0
 NORMAL = 0
 REWARD = 1
 
 from blockchainActions.Signature import *
-
 
 class Tx:
     def __init__(self, type=NORMAL):
@@ -19,6 +19,8 @@ class Tx:
         self.reqd = []
         self.status = []
         self.userId = []
+        self.txid = uuid.uuid1()
+
 
     def add_input(self, from_addr, amount):
         self.inputs.append((from_addr, amount))
