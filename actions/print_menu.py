@@ -63,8 +63,8 @@ def actions(auth_user, connection):
                     print("Coins have been transferred")
                 continue
         elif int(response) == 2:
-            currentBalance = checkBalanceObject.get_current_balance()[0]
-            print(f"Current coins: {currentBalance}")
+            # print(checkBalanceObject.subtract_of_balance_when_transaction_made())
+            print(f"Your current coins: {checkBalanceObject.get_current_balance_in_pool()} ")
             sleep(2)
             continue
         elif int(response) == 3:
