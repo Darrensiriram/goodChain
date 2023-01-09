@@ -1,4 +1,5 @@
 import os
+import platform
 # os.system("pip install -r requirements.txt")
 import sqlite3
 from getpass import getpass
@@ -7,16 +8,23 @@ from database_actions import login
 from database_actions import signup as s
 from database_actions import connectionSQL as dbcreate
 import pathlib
-
 connection = sqlite3.Connection('database_actions/goodchain.db')
-# os.system("touch data/block.dat")
-pathlib.Path('data/block.dat').touch()
-pathlib.Path('data/pool.dat').touch()
+
+
+if platform.system() == 'Darwin':
+    if os.path.exists('data'):
+        os.system("touch data/block.dat")
+        os.system("touch data/pool.dat")
+    else:
+        os.mkdir('data')
+else:
+    pathlib.Path('data/block.dat').touch()
+    pathlib.Path('data/pool.dat').touch()
 
 choiceList = ("1", "2", "3", '4')
 def print_public_menu():
     print("""
-    Public Menu
+    Public Menu 
     Menu for sign up in Goodchain
 
     1 - Login
