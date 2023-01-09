@@ -81,6 +81,8 @@ class transfercoins:
             except EOFError:
                 pass
         # fill the list for editing
+        if len(trans) == 0:
+           return False
         counter = 0
         for i in trans:
             print(f"TRANSACTION: {counter}")
