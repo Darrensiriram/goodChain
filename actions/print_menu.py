@@ -46,7 +46,7 @@ def actions(auth_user, connection):
             except:
                 print("Invalid option")
             else:
-                current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)[0]
+                current_balance = checkBalanceObject.current_balance()
                 if amount < transactionfee:
                     print("Oops ur amount is smaller then transaction fee")
                     print("Try again....")
@@ -63,8 +63,7 @@ def actions(auth_user, connection):
                     print("Coins have been transferred")
                 continue
         elif int(response) == 2:
-            # print(checkBalanceObject.subtract_of_balance_when_transaction_made())
-            print(f"Your current coins: {checkBalanceObject.get_current_balance_in_pool()} ")
+            print(f"Your current balance is: {checkBalanceObject.current_balance()}")
             sleep(2)
             continue
         elif int(response) == 3:
@@ -81,13 +80,19 @@ def actions(auth_user, connection):
                     pool.append(data)
             except EOFError:
                 pass
-            print(pool)
-            print(f"Total transactions in the pool: {len(pool)}")
+            if len(pool) != 0:
+                print(pool)
+                print(f"Total transactions in the pool: {len(pool)}")
+            else:
+                print("Pool is empty")
             sleep(4)
         elif int(response) == 5:
-            print("Cancel a transaction\n")
             tcObject = transferCoins.transfercoins(connection, auth_user)
-            transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject)
+            if transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject) == False:
+                print("Pool is empty")
+            else:
+                print("Cancel a transaction\n")
+                transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject)
             sleep(2)
             continue
         elif int(response) == 6:
