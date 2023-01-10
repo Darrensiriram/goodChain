@@ -33,4 +33,7 @@ def get_all_tx_in_the_chain():
                 allTx.append(pickle.load(f))
         except EOFError:
             pass
-    return allTx[0]
+    if len(allTx) == 0:
+        return None
+    else:
+        return allTx[0]
