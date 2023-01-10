@@ -126,6 +126,7 @@ def actions(auth_user, connection):
                                 mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
                                 loginObject.set_default_value_connectivity()
                                 loginObject.update_time_when_mine()
+                                #TODO: hier aanroepen dat en er een transactie wordt gemaakt voor, in de chain.
                                 checkBalanceObject.update_balance()
                                 break
                     except:
