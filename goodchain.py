@@ -18,6 +18,7 @@ if platform.system() == 'Darwin':
     else:
         os.mkdir('data')
 else:
+    pathlib.Path('data').mkdir(parents=True, exist_ok=True)
     pathlib.Path('data/block.dat').touch()
     pathlib.Path('data/pool.dat').touch()
 
