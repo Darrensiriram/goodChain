@@ -56,6 +56,7 @@ def startMenu():
             coins = 50
             signupUser = s.signUp(connection=connection, username=username, password=password, coins=coins)
             s.signUp.signUpUser(signupUser)
+            signupUser.sign_up_system_user()
         elif int(response) == 4:
             exit("Thank you for using the goodchain")
 
