@@ -95,7 +95,7 @@ class balance:
         else:
             pubc_key = self.get_user_pubc_key_by_id(self.authUser)
             balanceChain = 0
-            for x in allTx[0]:
+            for x in allTx:
                 pubc_keyX = x.inputs[0][0]
                 if pubc_key.decode('UTF-8') == pubc_keyX.decode('utf-8'):
                     uitgave = x.inputs[0][1]
