@@ -8,8 +8,9 @@ from database_actions import login
 from database_actions import signup as s
 from database_actions import connectionSQL as dbcreate
 import pathlib
-connection = sqlite3.Connection('database_actions/goodchain.db')
+from utils import helper
 
+connection = sqlite3.Connection('database_actions/goodchain.db')
 
 if platform.system() == 'Darwin':
     if os.path.exists('data'):
@@ -34,6 +35,7 @@ def print_public_menu():
     4 - Exit
     """)
 
+
 def startMenu():
     while True:
         print_public_menu()
@@ -47,8 +49,8 @@ def startMenu():
             loginUser = login.login(connection, username, password)
             loginUser.loginUser()
         elif int(response) == 2:
-             mine_actions.explore_chain()
-             sleep(2)
+            mine_actions.explore_chain()
+            sleep(2)
         elif int(response) == 3:
             dbcreate.createDatabase(connection)
             username = input("Fill in your username please: ")
@@ -60,5 +62,10 @@ def startMenu():
         elif int(response) == 4:
             exit("Thank you for using the goodchain")
 
+
+if os.path.exists('backup'):
+    pass
+else:
+    helper.create_hash('data/block.dat')
 
 startMenu()
