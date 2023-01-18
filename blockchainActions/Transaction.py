@@ -1,13 +1,14 @@
 from gzip import READ
 from operator import truediv
 from optparse import AmbiguousOptionError
+import uuid
+from utils.helper import *
 
 REWARD_VALUE = 25.0
 NORMAL = 0
 REWARD = 1
 
 from blockchainActions.Signature import *
-
 
 class Tx:
     def __init__(self, type=NORMAL):
@@ -18,12 +19,18 @@ class Tx:
         self.sigs = []
         self.reqd = []
         self.status = []
+        self.userId = []
+        self.txid = uuid.uuid1()
+
 
     def add_input(self, from_addr, amount):
         self.inputs.append((from_addr, amount))
 
     def add_output(self, to_addr, amount):
         self.outputs.append((to_addr, amount))
+
+    def add_userId(self, id):
+        self.userId.append(id)
 
     def add_reqd(self, addr):
         self.reqd.append(addr)
@@ -37,7 +44,6 @@ class Tx:
         self.sigs.append(newsig)
 
     def is_valid(self):
-
         if self.type == REWARD:
             if len(self.inputs) != 0 and len(self.outputs) != 1:
                 return False
@@ -84,14 +90,15 @@ class Tx:
         return data
 
     def __repr__(self):
-
         repr_str = "INPUTS:\n"
         for addr, amt in self.inputs:
-            repr_str = repr_str + str(amt) + "from" + str(addr) + "\n"
+            repr_str = repr_str + str(amt) + " from " + get_user_name_by_pub_key(pbcKey=addr.decode('utf-8')) + "\n"
+            # repr_str = repr_str + str(amt) + "from" + str(addr) + "\n"
 
         repr_str += "OUTPUTS:\n"
         for addr, amt in self.outputs:
-            repr_str = repr_str + str(amt) + "to" + str(addr) + "\n"
+            repr_str = repr_str + str(amt) + " to " + get_user_name_by_pub_key(pbcKey=addr.decode('utf-8')) + "\n"
+            # repr_str = repr_str + str(amt) + "to" + str(addr) + "\n"
 
         repr_str += "EXTRA REQUIRED SIGNATURES:\n"
         for req_sig in self.reqd:
@@ -101,9 +108,9 @@ class Tx:
         for sig in self.sigs:
             repr_str = repr_str + str(sig) + "\n"
 
-        repr_str += "STATUS:\n"
-        for status in self.status:
-            repr_str = repr_str + str(status) + "\n"
+        repr_str += "Created by userID:\n"
+        for id in self.userId:
+            repr_str = repr_str + str(id) + "\n"
 
         repr_str += "END\n"
 

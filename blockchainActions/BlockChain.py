@@ -1,16 +1,20 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 import pickle
+import uuid
 
-
+blockPath = 'data/block.dat'
 class CBlock:
     data = None
     previousHash = None
     previousBlock = None
+    blockHash = None
+    blockId = None
 
     def __init__(self, data, previousBlock):
         self.data = data
         self.previousBlock = previousBlock
+        self.blockId = uuid.uuid1()
         if previousBlock != None:
             self.previousHash = previousBlock.computeHash()
 
@@ -22,14 +26,20 @@ class CBlock:
 
     def is_valid(self):
         if self.previousBlock == None:
-            return True
-        return self.previousBlock.computeHash() == self.previousHash
+            if self.blockHash == self.computeHash():
+                return True
+            else:
+                return False
+        else:
+            current_block_validity = self.blockHash == self.computeHash()
+            previous_block_validity = self.previousBlock.is_valid()
+            return current_block_validity and previous_block_validity
 
     @staticmethod
     def get_prev_block():
         block = []
         count = 0
-        with open("block.dat", "rb") as file:
+        with open(blockPath, "rb") as file:
             try:
                 while True:
                     loadPickle = pickle.load(file)
@@ -37,9 +47,3 @@ class CBlock:
                     count = count + 1
             except EOFError:
                 pass
-        # print(block[0])
-        # if len(block) == 0:
-        #     return None
-        # elif count == 0:
-        #     return block[0]
-        # return block[count]

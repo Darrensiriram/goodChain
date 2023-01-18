@@ -2,7 +2,7 @@ from blockchainActions.BlockChain import CBlock
 import time
 import pickle
 from blockchainActions.TxBlock import *
-#todo: get all the transaction of the pool
+
 alltrans = []
 with open("../pool.dat","rb") as f:
     try:
@@ -41,10 +41,3 @@ if elapsed < 30:
     print("Alarm! Mining is too fast")
 elif elapsed > 60:
     print("Alarm! Mining is too Slow")
-
-
-#todo: create a chain and save to the block.dat file
-
-
-#todo: after 3 succesfull logins , start mining proces make a database table where u can keep track of the logins
-
