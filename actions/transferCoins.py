@@ -16,6 +16,20 @@ class transfercoins:
         self.amount = amount
         self.transactionfee = transactionfee
 
+    def createSystemTx(self,amount, transactionfee):
+        Tx1 = Tx()
+        sender_user_pk_key, sender_user_pbc_key = self.get_key_credentials_system_user()
+        receiver_user_pk_key, receiver_user_pbc_key = self.get_key_credentials_current_user()
+        Tx1.add_input(sender_user_pbc_key, amount)
+        Tx1.add_output(receiver_user_pbc_key, amount - transactionfee)
+        Tx1.sign(sender_user_pk_key)
+        Tx1.add_userId("system_user")
+        if Tx1.is_valid():
+            Tx1.add_status("Valid")
+        else:
+            Tx1.add_status("Invalid")
+        return Tx1
+
     def createTx(self, amount, transactionfee):
         Tx1 = Tx()
         sender_user_pk_key, sender_user_pbc_key = self.get_key_credentials_current_user()
@@ -29,6 +43,18 @@ class transfercoins:
         else:
             Tx1.add_status("Invalid")
         return Tx1
+
+    def get_key_credentials_system_user(self):
+        cur = self.connection.cursor()
+        result = cur.execute('SELECT private_key , public_key from users where username = ?', ("system_user",))
+        for x in result:
+            privatekey = x[0]
+            publickey = x[1]
+        encoded_pk = privatekey.encode('UTF-8')
+        encoded_pbKey = publickey.encode('UTF-8')
+        deserializedkey = load_pem_private_key(encoded_pk, password=None)
+        return deserializedkey, encoded_pbKey
+
 
     def get_key_credentials_current_user(self):
         cur = self.connection.cursor()
