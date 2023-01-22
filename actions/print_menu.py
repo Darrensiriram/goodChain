@@ -37,8 +37,8 @@ def actions(auth_user, connection):
         elif int(response) == 1 and helper.compare_hashes('data/block.dat'):
             try:
                 chosen_user = input("please enter the username: ")
-                amount = int(input("please specify the coin amount: "))
-                transactionfee = int(input("please enter a transaction fee: "))
+                amount = float(input("please specify the coin amount: "))
+                transactionfee = float(input("please enter a transaction fee: "))
                 current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)
                 if not current_balance:
                     print("There is no transaction made, Username is not found")
@@ -130,16 +130,14 @@ def actions(auth_user, connection):
                                 transferCoinsobject = transferCoins.transfercoins(connection, auth_user, "system_user",
                                                                                   25,
                                                                                   0)
-                                tx = transferCoinsobject.createTx(25, 0)
+                                tx = transferCoinsobject.createSystemTx(25, 0)
                                 transferCoinsobject.save_transaction_in_the_pool(tx)
-
                                 checkBalanceObject.update_balance()
                                 helper.create_hash('data/block.dat')
                                 break
                     except:
                         print("Oops That is not a valid option")
                 sleep(2)
-                # print(mining_actions.mine_actions.get_block_chain())
             continue
         elif int(response) == 7:
             print("Log out")
