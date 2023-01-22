@@ -5,6 +5,7 @@ from actions import mining_actions
 from database_actions import login
 import os
 from time import sleep
+from utils import helper
 
 poolPath = 'data/pool.dat'
 choiceList = ("1", "2", "3", '4', '5', '6', '7')
@@ -33,11 +34,11 @@ def actions(auth_user, connection):
         if response not in choiceList:
             print("Please select a valid option")
             sleep(2)
-        elif int(response) == 1:
+        elif int(response) == 1 and helper.compare_hashes('data/block.dat'):
             try:
                 chosen_user = input("please enter the username: ")
-                amount = int(input("please specify the coin amount: "))
-                transactionfee = int(input("please enter a transaction fee: "))
+                amount = float(input("please specify the coin amount: "))
+                transactionfee = float(input("please enter a transaction fee: "))
                 current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)
                 if not current_balance:
                     print("There is no transaction made, Username is not found")
@@ -62,16 +63,16 @@ def actions(auth_user, connection):
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
                 continue
-        elif int(response) == 2:
+        elif int(response) == 2 and helper.compare_hashes('data/block.dat'):
             print(f"Your current balance is: {checkBalanceObject.current_balance()}")
             sleep(2)
             continue
-        elif int(response) == 3:
+        elif int(response) == 3 and helper.compare_hashes('data/block.dat'):
             print("Explore the chain")
             mining_actions.mine_actions.explore_chain()
             sleep(2)
             continue
-        elif int(response) == 4:
+        elif int(response) == 4 and helper.compare_hashes('data/block.dat'):
             pool = []
             loadfile = open(poolPath, "rb")
             try:
@@ -86,7 +87,7 @@ def actions(auth_user, connection):
             else:
                 print("Pool is empty")
             sleep(4)
-        elif int(response) == 5:
+        elif int(response) == 5 and helper.compare_hashes('data/block.dat'):
             tcObject = transferCoins.transfercoins(connection, auth_user)
             if transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject) == False:
                 print("Pool is empty")
@@ -95,7 +96,7 @@ def actions(auth_user, connection):
                 transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject)
             sleep(2)
             continue
-        elif int(response) == 6:
+        elif int(response) == 6 and helper.compare_hashes('data/block.dat'):
             loginObject = login.login(connection)
             if transferCoins.transfercoins.get_total_transaction_in_pool() < 5:
                 print("There are not enough transaction in the pool.")
@@ -129,15 +130,14 @@ def actions(auth_user, connection):
                                 transferCoinsobject = transferCoins.transfercoins(connection, auth_user, "system_user",
                                                                                   25,
                                                                                   0)
-                                tx = transferCoinsobject.createTx(25, 0)
+                                tx = transferCoinsobject.createSystemTx(25, 0)
                                 transferCoinsobject.save_transaction_in_the_pool(tx)
-
                                 checkBalanceObject.update_balance()
+                                helper.create_hash('data/block.dat')
                                 break
                     except:
                         print("Oops That is not a valid option")
                 sleep(2)
-                # print(mining_actions.mine_actions.get_block_chain())
             continue
         elif int(response) == 7:
             print("Log out")

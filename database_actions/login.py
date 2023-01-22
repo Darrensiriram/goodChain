@@ -86,12 +86,11 @@ class login:
         if db_time is None:
             cur.execute('UPDATE connectivity SET currentTime = ? WHERE id = 1',[current_time])
             self.connection.commit()
+            return False
         three_min = 180
         if current_time > (db_time + float(three_min)):
             return False
         return True
-
-
 
     def update_time_when_mine(self):
         cur = self.connection.cursor()
