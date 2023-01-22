@@ -37,8 +37,8 @@ def actions(auth_user, connection):
         elif int(response) == 1 and helper.compare_hashes('data/block.dat'):
             try:
                 chosen_user = input("please enter the username: ")
-                amount = int(input("please specify the coin amount: "))
-                transactionfee = int(input("please enter a transaction fee: "))
+                amount = float(input("please specify the coin amount: "))
+                transactionfee = float(input("please enter a transaction fee: "))
                 current_balance = checkBalanceObject.get_current_balance_from_user(chosen_user)
                 if not current_balance:
                     print("There is no transaction made, Username is not found")
