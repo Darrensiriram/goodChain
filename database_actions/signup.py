@@ -21,15 +21,15 @@ class signUp:
         self.connection.commit()
 
     def sign_up_system_user(self):
+        private_keyNew, public_keyNew = generate_keys()
         bytes = "test".encode('UTF-8')
         salt = bcrypt.gensalt(12)
         hashed_pwd = bcrypt.hashpw(bytes, salt)
         cur = self.connection.cursor()
         userFound = cur.execute('SELECT * FROM users where username = "system_user"').fetchone()
-        print(userFound)
         if userFound is not None:
             return None
         else:
             cur.execute("INSERT INTO users (username, password, coins, private_key, public_key) VALUES (?,?,?,?,?)",
-                        ['system_user', hashed_pwd, 9999999, self.private_key, self.public_key])
+                        ['system_user', hashed_pwd, 9999999, private_keyNew, public_keyNew])
             self.connection.commit()
