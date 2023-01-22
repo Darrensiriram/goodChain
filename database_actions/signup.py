@@ -22,6 +22,8 @@ class signUp:
 
     def sign_up_system_user(self):
         private_keyNew, public_keyNew = generate_keys()
+        pvKey = private_keyNew.decode("UTF-8")
+        pbKey = public_keyNew.decode("UTF-8")
         bytes = "test".encode('UTF-8')
         salt = bcrypt.gensalt(12)
         hashed_pwd = bcrypt.hashpw(bytes, salt)
@@ -31,5 +33,5 @@ class signUp:
             return None
         else:
             cur.execute("INSERT INTO users (username, password, coins, private_key, public_key) VALUES (?,?,?,?,?)",
-                        ['system_user', hashed_pwd, 9999999, private_keyNew, public_keyNew])
+                        ['system_user', hashed_pwd, 9999999, pvKey, pbKey])
             self.connection.commit()
