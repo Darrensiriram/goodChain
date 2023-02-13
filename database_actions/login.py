@@ -15,21 +15,6 @@ class login:
 
 
 
-    @staticmethod
-    def validateBlock():
-        allblocks = []
-        with open("block.dat", "rb") as f:
-            try:
-                while True:
-                    allblocks.append(pickle.load(f))
-            except EOFError:
-                pass
-        for b in allblocks[0]:
-            if b.is_valid():
-                return False
-            else:
-                return True
-
 
     def get_pwd_from_User(self, username):
         cur = self.connection.cursor()

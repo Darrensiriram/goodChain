@@ -30,7 +30,7 @@ class TxBlock(CBlock):
         return total_in, total_out
 
     def is_valid(self):
-        if not super(TxBlock, self).is_valid():
+        if not super(TxBlock, self).is_valid_chain():
             return False
         for tx in self.data:
             if not tx.is_valid():

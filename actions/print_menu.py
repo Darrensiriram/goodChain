@@ -3,7 +3,6 @@ from actions import check_balance
 from actions import transferCoins
 from actions import mining_actions
 from database_actions import login
-import os
 from time import sleep
 from utils import helper
 
@@ -28,6 +27,13 @@ def print_menu_loggedIn(auth_user, connection):
 
 def actions(auth_user, connection):
     checkBalanceObject = check_balance.balance(connection, auth_user)
+    if helper.validateBlock():
+        print("Chain is valid")
+        sleep(2)
+    else:
+        print("Chain is not valid")
+        sleep(2)
+
     while True:
         print_menu_loggedIn(auth_user, connection)
         response = input("What would u like to do? \n")
@@ -123,7 +129,7 @@ def actions(auth_user, connection):
                         else:
                             if chosenInput < len(specifyBlocks):
                                 mining_actions.mine_actions.mine_block(specifyBlocks, chosenInput)
-                                mining_actions.mine_actions.save_to_chain(specifyBlocks[0][0])
+                                # mining_actions.mine_actions.save_to_chain(specifyBlocks[0][0])
                                 mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
                                 loginObject.set_default_value_connectivity()
                                 loginObject.update_time_when_mine()

@@ -24,7 +24,7 @@ class CBlock:
         digest.update(bytes(str(self.previousHash), 'utf8'))
         return digest.finalize()
 
-    def is_valid(self):
+    def is_valid_chain(self):
         if self.previousBlock == None:
             if self.blockHash == self.computeHash():
                 return True
