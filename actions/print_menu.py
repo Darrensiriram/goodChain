@@ -128,16 +128,17 @@ def actions(auth_user, connection):
                             break
                         else:
                             if chosenInput < len(specifyBlocks):
+                                #TODO: check of hier alles uit moet staan
                                 mining_actions.mine_actions.mine_block(specifyBlocks, chosenInput)
                                 # mining_actions.mine_actions.save_to_chain(specifyBlocks[0][0])
-                                mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
+                                # mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
                                 loginObject.set_default_value_connectivity()
                                 loginObject.update_time_when_mine()
-                                transferCoinsobject = transferCoins.transfercoins(connection, auth_user, "system_user",
-                                                                                  25,
-                                                                                  0)
-                                tx = transferCoinsobject.createSystemTx(25, 0)
-                                transferCoinsobject.save_transaction_in_the_pool(tx)
+                                # transferCoinsobject = transferCoins.transfercoins(connection, auth_user, "system_user",
+                                #                                                   25,
+                                #                                                   0)
+                                # tx = transferCoinsobject.createSystemTx(25, 0)
+                                # transferCoinsobject.save_transaction_in_the_pool(tx)
                                 checkBalanceObject.update_balance()
                                 helper.create_hash('data/block.dat')
                                 break

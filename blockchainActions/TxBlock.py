@@ -30,16 +30,17 @@ class TxBlock(CBlock):
         return total_in, total_out
 
     def is_valid(self):
-        if not super(TxBlock, self).is_valid_chain():
+        if super(TxBlock, self).is_valid_chain():
             return False
         for tx in self.data:
-            if not tx.is_valid():
+            if tx.is_valid():
+                print("Invalid transaction found in block")
                 return False
 
         total_in, total_out = self.__count_totals()
 
         Tx_Balance = round(total_out - total_in, 10)
-
+        print(f'csdsaghdbahsjbdsjalbdsajlbdashjbdsahdbshabdsahdjsabdsajhbdashdjbashjdbasjh')
         if Tx_Balance > REWARD_VALUE:
             return False
         return True

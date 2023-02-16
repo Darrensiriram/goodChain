@@ -112,7 +112,7 @@ class mine_actions:
         for x in block[index]:
             for y in x:
                 txBlock.addTx(y)
-                if txBlock.is_valid() or prevblock == None:
+                if txBlock.is_valid():
                     mine_actions.mine_timer(txBlock)
         mine_actions.save_to_chain(txBlock)
 

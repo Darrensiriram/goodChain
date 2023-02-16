@@ -32,7 +32,7 @@ class CBlock:
                 return False
         else:
             current_block_validity = self.blockHash == self.computeHash()
-            previous_block_validity = self.previousBlock.is_valid()
+            previous_block_validity = self.previousBlock.is_valid_chain()
             return current_block_validity and previous_block_validity
 
     @staticmethod
