@@ -68,8 +68,16 @@ def actions(auth_user, connection):
                     tx = transferCoinsobject.createTx(amount, transactionfee)
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
+                    if helper.validateBlock():
+                        print("chain is valid")
+                        continue
+                    else:
+                        print("Chain is invalid")
                 continue
         elif int(response) == 2 and helper.compare_hashes('data/block.dat'):
+            if helper.validateBlock():
+                print("chain is valid")
+                continue
             print(f"Your current balance is: {checkBalanceObject.current_balance()}")
             sleep(2)
             continue
@@ -108,9 +116,11 @@ def actions(auth_user, connection):
                 print("There are not enough transaction in the pool.")
                 print(f"There are currently {transferCoins.transfercoins.get_total_transaction_in_pool()} in the pool.")
                 sleep(2)
-            # elif loginObject.get_current_connected_count()[0] < 4:
-            #     print("sorry not enough members have valided the chain")
-            #     sleep(2)
+            elif loginObject.get_current_connected_count()[0] < 4:
+                print("sorry not enough members have valided the chain")
+                if helper.validateBlock():
+                    print("chain is valid")
+                sleep(2)
             elif loginObject.get_current_time():
                 print("Whoops u can not mine so fast in a row.")
                 sleep(2)
@@ -128,17 +138,15 @@ def actions(auth_user, connection):
                             break
                         else:
                             if chosenInput < len(specifyBlocks):
-                                #TODO: check of hier alles uit moet staan
                                 mining_actions.mine_actions.mine_block(specifyBlocks, chosenInput)
-                                # mining_actions.mine_actions.save_to_chain(specifyBlocks[0][0])
-                                # mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
+                                mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
                                 loginObject.set_default_value_connectivity()
                                 loginObject.update_time_when_mine()
-                                # transferCoinsobject = transferCoins.transfercoins(connection, auth_user, "system_user",
-                                #                                                   25,
-                                #                                                   0)
-                                # tx = transferCoinsobject.createSystemTx(25, 0)
-                                # transferCoinsobject.save_transaction_in_the_pool(tx)
+                                transferCoinsobject = transferCoins.transfercoins(connection, auth_user, "system_user",
+                                                                                  25,
+                                                                                  0)
+                                tx = transferCoinsobject.createSystemTx(25, 0)
+                                transferCoinsobject.save_transaction_in_the_pool(tx)
                                 checkBalanceObject.update_balance()
                                 helper.create_hash('data/block.dat')
                                 break

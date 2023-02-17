@@ -40,7 +40,6 @@ class TxBlock(CBlock):
         total_in, total_out = self.__count_totals()
 
         Tx_Balance = round(total_out - total_in, 10)
-        print(f'csdsaghdbahsjbdsjalbdsajlbdashjbdsahdbshabdsahdjsabdsajhbdashdjbashjdbasjh')
         if Tx_Balance > REWARD_VALUE:
             return False
         return True
