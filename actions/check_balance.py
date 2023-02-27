@@ -89,31 +89,33 @@ class balance:
         return None
 
     def calculate_the_balance_using_chain_outcome(self):
-        allTx = get_all_tx_in_the_chain()
+        allTx = retrieve_blocks()
         if allTx is None:
             return "Chain is empty"
         else:
             pubc_key = self.get_user_pubc_key_by_id(self.authUser)
             balanceChain = 0
             for x in allTx:
-                pubc_keyX = x.inputs[0][0]
-                if pubc_key.decode('UTF-8') == pubc_keyX.decode('utf-8'):
-                    uitgave = x.inputs[0][1]
-                    balanceChain += uitgave
+                for y in x.data:
+                    pubc_keyX = y.inputs[0][0]
+                    if pubc_key.decode('UTF-8') == pubc_keyX.decode('utf-8'):
+                        uitgave = y.inputs[0][1]
+                        balanceChain += uitgave
             return balanceChain
 
     def calculate_the_balance_using_chain_income(self):
-        alltx = get_all_tx_in_the_chain()
+        alltx = retrieve_blocks()
         if alltx is None:
             return "Chain is empty"
         else:
             pubc_key = self.get_user_pubc_key_by_id(self.authUser)
             balanceChain = 0
             for x in alltx:
-                amount = x.outputs[0][1]
-                pubcKey = x.outputs[0][0]
-                if pubc_key.decode('utf-8') == pubcKey.decode('utf-8'):
-                    balanceChain += amount
+                for y in x.data:
+                    amount = y.outputs[0][1]
+                    pubcKey = y.outputs[0][0]
+                    if pubc_key.decode('utf-8') == pubcKey.decode('utf-8'):
+                        balanceChain += amount
             return balanceChain
 
     def total_balance_chain(self):

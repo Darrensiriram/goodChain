@@ -5,6 +5,7 @@ import blockchainActions.BlockChain
 from blockchainActions.TxBlock import *
 from blockchainActions.BlockChain import *
 from actions.transferCoins import *
+from utils import helper
 import os
 
 MIN_MINING_TIME = 30
@@ -64,7 +65,7 @@ class mine_actions:
 
     @staticmethod
     def explore_chain():
-        blockchain = mine_actions.get_block_chain()
+        blockchain = helper.retrieve_blocks()
         if len(blockchain) == 0:
            return print("The chain is empty")
 
@@ -74,7 +75,7 @@ class mine_actions:
             print("-----------------------------------------------------------------")
             print(f"                        block: {genesis(i)}                     ")
             print("-----------------------------------------------------------------")
-            print(f"Transaction {x}                                              ")
+            print(f"Transaction {x.data}                                            ")
             print("-----------------------------------------------------------------")
             i += 1
 
@@ -111,8 +112,9 @@ class mine_actions:
         for x in block[index]:
             for y in x:
                 txBlock.addTx(y)
-                if txBlock.is_valid() or prevblock == None:
+                if txBlock.is_valid():
                     mine_actions.mine_timer(txBlock)
+        mine_actions.save_to_chain(txBlock)
 
 
     def mine_timer(txblock):

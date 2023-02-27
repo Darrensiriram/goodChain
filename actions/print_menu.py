@@ -3,7 +3,6 @@ from actions import check_balance
 from actions import transferCoins
 from actions import mining_actions
 from database_actions import login
-import os
 from time import sleep
 from utils import helper
 
@@ -28,6 +27,13 @@ def print_menu_loggedIn(auth_user, connection):
 
 def actions(auth_user, connection):
     checkBalanceObject = check_balance.balance(connection, auth_user)
+    if helper.validateBlock():
+        print("Chain is valid")
+        sleep(2)
+    else:
+        print("Chain is not valid")
+        sleep(2)
+
     while True:
         print_menu_loggedIn(auth_user, connection)
         response = input("What would u like to do? \n")
@@ -62,8 +68,16 @@ def actions(auth_user, connection):
                     tx = transferCoinsobject.createTx(amount, transactionfee)
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
+                    if helper.validateBlock():
+                        print("chain is valid")
+                        continue
+                    else:
+                        print("Chain is invalid")
                 continue
         elif int(response) == 2 and helper.compare_hashes('data/block.dat'):
+            if helper.validateBlock():
+                print("chain is valid")
+                continue
             print(f"Your current balance is: {checkBalanceObject.current_balance()}")
             sleep(2)
             continue
@@ -102,9 +116,11 @@ def actions(auth_user, connection):
                 print("There are not enough transaction in the pool.")
                 print(f"There are currently {transferCoins.transfercoins.get_total_transaction_in_pool()} in the pool.")
                 sleep(2)
-            # elif loginObject.get_current_connected_count()[0] < 4:
-            #     print("sorry not enough members have valided the chain")
-            #     sleep(2)
+            elif loginObject.get_current_connected_count()[0] < 4:
+                print("sorry not enough members have valided the chain")
+                if helper.validateBlock():
+                    print("chain is valid")
+                sleep(2)
             elif loginObject.get_current_time():
                 print("Whoops u can not mine so fast in a row.")
                 sleep(2)
@@ -123,7 +139,6 @@ def actions(auth_user, connection):
                         else:
                             if chosenInput < len(specifyBlocks):
                                 mining_actions.mine_actions.mine_block(specifyBlocks, chosenInput)
-                                mining_actions.mine_actions.save_to_chain(specifyBlocks[0][0])
                                 mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
                                 loginObject.set_default_value_connectivity()
                                 loginObject.update_time_when_mine()

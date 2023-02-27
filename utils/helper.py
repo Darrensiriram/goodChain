@@ -87,3 +87,27 @@ def compare_hashes(file_path):
         print("Tampering detected!")
         # create_hash(file_path)
         return False
+
+
+def retrieve_blocks():
+    allblocks = []
+    with open("data/block.dat", "rb") as f:
+        try:
+            while True:
+                allblocks.append(pickle.load(f))
+        except EOFError:
+            pass
+    return allblocks
+
+
+
+def validateBlock():
+    allblocks = retrieve_blocks()
+    if len(allblocks) == 0:
+        print("Chain is empty")
+        # return True
+    for b in allblocks:
+        if b.is_valid_chain():
+            return True
+        else:
+            return False
