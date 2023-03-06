@@ -66,8 +66,8 @@ def actions(auth_user, connection):
                     transferCoinsobject = transferCoins.transfercoins(connection, auth_user, chosen_user, amount,
                                                                       transactionfee)
                     tx = transferCoinsobject.createTx(amount, transactionfee)
-                    txObject = transferCoins.transfercoins(connection auth_user, "system_user", transactionfee, amount )
-                    txFee =  txObject.createTx(transactionfee, amount)
+                    txObject = transferCoins.transfercoins(connection, auth_user, "system_user", transactionfee, amount )
+                    txFee =  txObject.createSystemTx(transactionfee, amount)
                     txObject.save_transaction_in_the_pool(txFee)
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
