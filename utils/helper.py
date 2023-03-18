@@ -105,7 +105,7 @@ def validateBlock():
     allblocks = retrieve_blocks()
     if len(allblocks) == 0:
         print("Chain is empty")
-        # return True
+        return True
     for b in allblocks:
         if b.is_valid_chain():
             return True
