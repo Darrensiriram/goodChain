@@ -80,10 +80,9 @@ def actions(auth_user, connection):
         elif int(response) == 2 and helper.compare_hashes('data/block.dat'):
             if helper.validateBlock():
                 print("chain is valid")
+                print(f"Your current balance is: {checkBalanceObject.current_balance()}")
+                sleep(2)
                 continue
-            print(f"Your current balance is: {checkBalanceObject.current_balance()}")
-            sleep(2)
-            continue
         elif int(response) == 3 and helper.compare_hashes('data/block.dat'):
             print("Explore the chain")
             mining_actions.mine_actions.explore_chain()
