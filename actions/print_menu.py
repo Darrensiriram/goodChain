@@ -63,6 +63,7 @@ def actions(auth_user, connection):
                     print("Try again....")
                     sleep(2)
                 else:
+                    #todo implement the feature that broadcast the transaction to the network
                     transferCoinsobject = transferCoins.transfercoins(connection, auth_user, chosen_user, amount,
                                                                       transactionfee)
                     tx = transferCoinsobject.createTx(amount, transactionfee)

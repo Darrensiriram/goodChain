@@ -18,7 +18,7 @@ connection = sqlite3.Connection('database_actions/goodchain.db')
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
 localIP = sock.gethostbyname("localhost")
-port = 5060
+port = 5067
 ADDR = (localIP, port)
 FORMAT = 'utf-8'
 HEADER = 64
@@ -49,19 +49,56 @@ def print_public_menu():
     """)
 
 
-def sendmsg(msg):
-    message = msg.encode(FORMAT)
-    msg_length = len(message)
-    send_length = str(msg_length).encode(FORMAT)
-    send_length += b' ' * (HEADER - len(send_length))
-    socket.send(send_length)
-    socket.send(message)
+
+def handle_client(conn, addr):
+    # Handle incoming messages from the client
+    while True:
+        data = conn.recv(1024)
+        if not data:
+            break
+        msg = data.decode('utf-8')
+        print(f'Received message from {addr}: {msg}')
+
+    conn.close()
+    print(f'Connection with {addr} closed.')
+
+def start_server():
+    # Start the server and listen for incoming connections
+    with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+        s.bind(ADDR)
+        s.listen()
+        print(f'Server started and listening on {localIP}:{port}...')
+
+        while True:
+            conn, addr = s.accept()
+            print(f'Connected with {addr}')
+            threading.Thread(target=handle_client, args=(conn, addr)).start()
+
+
+def start_client():
+    # Start the client and connect to a remote server
+    with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+        s.connect(ADDR)
+        print(f'Connected to server on {localIP}:{port}...')
+
+        # Send some messages to the server
+        s.sendall('Hello, server!'.encode('utf-8'))
+        s.sendall('How are you?'.encode('utf-8'))
+
+        # Wait for the server to send a response
+        data = s.recv(1024)
+        msg = data.decode('utf-8')
+        print(f'Received response from server: {msg}')
+
 
 
 
 def startMenu():
+    threading.Thread(target=start_server).start()
+    threading.Thread(target=start_client).start()
     while True:
-        socket.connect(ADDR)
+        sleep(5)
+        os.system('cls' if os.name == 'nt' else 'clear')
         print_public_menu()
         response = input("What would u like to do? \n ")
         if response not in choiceList:

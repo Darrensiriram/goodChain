@@ -3,9 +3,22 @@ from time import sleep
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from blockchainActions.Transaction import *
 from utils.helper import *
+import subprocess as sp
+import socket
+import json
 
 poolPath = 'data/pool.dat'
 
+
+def check_nodes_reachable(node, port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.settimeout(1)
+        sock.connect((node, port))
+        sock.close()
+        return True
+    except:
+        return False
 
 class transfercoins:
 
@@ -15,8 +28,9 @@ class transfercoins:
         self.chosen_user = chosen_user
         self.amount = amount
         self.transactionfee = transactionfee
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-    def createSystemTx(self,amount, transactionfee):
+    def createSystemTx(self, amount, transactionfee):
         Tx1 = Tx()
         sender_user_pk_key, sender_user_pbc_key = self.get_key_credentials_system_user()
         receiver_user_pk_key, receiver_user_pbc_key = self.get_key_credentials_current_user()
@@ -29,6 +43,22 @@ class transfercoins:
         else:
             Tx1.add_status("Invalid")
         return Tx1
+
+    @staticmethod
+    def send_transaction_to_nodes(tx, port, node):
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        if check_nodes_reachable(node, port):
+            try:
+                message = json.dumps(tx)
+                encode_message = message.encode()
+                with sock as s:
+                    s.connect((node, port))
+                    s.sendall(encode_message)
+            except ConnectionError:
+                print(f"Connection error with {node}")
+        else:
+            print(f"{node} is not reachable on port {port}")
+
 
     def createTx(self, amount, transactionfee):
         Tx1 = Tx()
@@ -58,8 +88,6 @@ class transfercoins:
             Tx1.add_status("Invalid")
         return Tx1
 
-
-
     def get_key_credentials_system_user(self):
         cur = self.connection.cursor()
         result = cur.execute('SELECT private_key , public_key from users where username = ?', ("system_user",))
@@ -70,7 +98,6 @@ class transfercoins:
         encoded_pbKey = publickey.encode('UTF-8')
         deserializedkey = load_pem_private_key(encoded_pk, password=None)
         return deserializedkey, encoded_pbKey
-
 
     def get_key_credentials_current_user(self):
         cur = self.connection.cursor()
@@ -124,7 +151,7 @@ class transfercoins:
                 pass
         # fill the list for editing
         if len(trans) == 0:
-           return False
+            return False
         counter = 0
         for i in trans:
             print(f"TRANSACTION: {counter}")
@@ -163,7 +190,6 @@ class transfercoins:
                     allTx.append(pickle.load(f))
             except EOFError:
                 pass
-
 
         for x in allTx:
             try:
