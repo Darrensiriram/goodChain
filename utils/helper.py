@@ -121,7 +121,6 @@ def broadcast(msg, localIP, port):
     print(f'Broadcasting message all over the network: {msg} ')
     s.sendall(msg.encode("UTF-8"))
 
-
 def update_file(current_file, new_file):
     with open(new_file, 'rb') as f:
         new_data = f.read()
@@ -136,5 +135,4 @@ def broadcast_file(filename, localIP, port):
         filedata = f.read()
     print(f"File broadcasted all over the network: {filename}")
     s.sendall(filedata)
-    print("File sent successfully & updated the file")
-    update_file(filename, "data/pool.dat")
+    print("File sent successfully")
