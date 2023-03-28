@@ -1,0 +1,13 @@
+version: '3'
+services:
+  goodchain:
+    build: .
+    container_name: goodchain
+    restart: always
+    ports:
+      - "5067:5067"
+    volumes:
+      - "./data:/app/data"
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: ["python", "network_actions/server.py"]

@@ -17,8 +17,9 @@ from utils import helper
 connection = sqlite3.Connection('database_actions/goodchain.db')
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
+# localIP = sock.gethostbyaddr('192.168.2.31')[0]
 localIP = sock.gethostbyname("localhost")
-port = 5067
+port = 5090
 ADDR = (localIP, port)
 FORMAT = 'utf-8'
 HEADER = 64
@@ -82,12 +83,12 @@ def start_client():
         print(f'Connected to server on {localIP}:{port}...')
 
         # Send some messages to the server
-        s.sendall('Hello, server!'.encode('utf-8'))
-        s.sendall('How are you?'.encode('utf-8'))
+        s.sendall('Hello, server!'.encode(FORMAT))
+        s.sendall('How are you?'.encode(FORMAT))
 
         # Wait for the server to send a response
         data = s.recv(1024)
-        msg = data.decode('utf-8')
+        msg = data.decode(FORMAT)
         print(f'Received response from server: {msg}')
 
 
@@ -97,9 +98,10 @@ def startMenu():
     threading.Thread(target=start_server).start()
     threading.Thread(target=start_client).start()
     while True:
-        sleep(5)
-        os.system('cls' if os.name == 'nt' else 'clear')
+        sleep(3)
+        # os.system('cls' if os.name == 'nt' else 'clear')
         print_public_menu()
+        helper.broadcast("Hello, world!", localIP, port)
         response = input("What would u like to do? \n ")
         if response not in choiceList:
             print("Please select a valid option")

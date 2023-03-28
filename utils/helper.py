@@ -2,6 +2,8 @@ import pickle
 import sqlite3
 import hashlib
 import os
+import socket
+import threading
 connection = sqlite3.Connection('database_actions/goodchain.db')
 def pluckStr(result: list, key):
     if key in result:
@@ -111,3 +113,12 @@ def validateBlock():
             return True
         else:
             return False
+
+
+def broadcast(msg, localIP, port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((localIP, port))
+        print(f'Connected to server on {localIP}:{port}...')
+        # Send some messages to the server
+        s.sendall('spam!!'.encode("UTF-8"))
+

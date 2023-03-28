@@ -1,54 +1,62 @@
-import socket
+import socket as sock
 import threading
 
-PORT = 5060
-local_ip = socket.gethostbyname('localhost')
-ADDR = (local_ip, PORT)
-HEADER = 64
+socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
+localIP = sock.gethostbyaddr('192.168.2.41')[0]
+# localIP = sock.gethostbyname("localhost")
+port = 5068
+ADDR = (localIP, port)
 FORMAT = 'utf-8'
+HEADER = 64
 DISCONNECTED_MESSAGE = "!DISCONNECTED"
 
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind(ADDR)
 
 
 def handle_client(conn, addr):
-    client_name = conn.recv(2048).decode(FORMAT)
-    print(client_name)
-    print(f"[NEW CONNECTION] {client_name}@{addr} is connected.")
-    connection_message = f"...\nHi {client_name}! \nYour are successfully connected to the server"
-    conn.send(connection_message.encode(FORMAT))
-    connected = True
-    while connected:
-        try:
-            msg_lenth = conn.recv(HEADER).decode(FORMAT)
-            if msg_lenth:
-                msg_lenth = int(msg_lenth)
-                msg = conn.recv(msg_lenth).decode(FORMAT)
-                if msg == DISCONNECTED_MESSAGE:
-                    connected = False
-                print(f"[{client_name}]@[{addr}] {msg}")
-                return_message = f'Server received your message: "{msg}"'
-                conn.send(return_message.encode(FORMAT))
-        except ConnectionError:
-            print(f"{client_name}@{addr} is disconnected")
-            connected = False
-
-    bye_message = f"\nBye {client_name}!"
-    conn.send(bye_message.encode(FORMAT))
-    conn.close(f"\n[ACTIVE CONNECTION] {threading.active_count() - 2}")
-    print()
-
-
-def start():
-    server.listen()
-    print(f"[LISTENING] Server is listening on {local_ip}")
+    # Handle incoming messages from the client
     while True:
-        conn, addr = server.accept()
-        thread = threading.Thread(target=handle_client, args=(conn, addr))
-        thread.start()
-        print(f"[ACTIVE CONNECTIONS] {threading.active_count() - 1}")
+        data = conn.recv(1024)
+        if not data:
+            break
+        msg = data.decode('utf-8')
+        print(f'Received message from {addr}: {msg}')
+
+    conn.close()
+    print(f'Connection with {addr} closed.')
 
 
-print("[STARTING] server is starting...")
-start()
+
+def start_server():
+    # Start the server and listen for incoming connections
+    with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+        s.bind(ADDR)
+        s.listen()
+        print(f'Server started and listening on {localIP}:{port}...')
+
+        while True:
+            conn, addr = s.accept()
+            print(f'Connected with {addr}')
+            threading.Thread(target=handle_client, args=(conn, addr)).start()
+
+
+
+
+def start_client():
+    # Start the client and connect to a remote server
+    with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+        s.connect(ADDR)
+        print(f'Connected to server on {localIP}:{port}...')
+
+        # Send some messages to the server
+        s.sendall('Hello, server!'.encode(FORMAT))
+        s.sendall('How are you?'.encode(FORMAT))
+
+        # Wait for the server to send a response
+        data = s.recv(1024)
+        msg = data.decode(FORMAT)
+        print(f'Received response from server: {msg}')
+
+
+
+threading.Thread(target=start_server).start()
+threading.Thread(target=start_client).start()
