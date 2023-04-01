@@ -3,7 +3,9 @@ import threading
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
 # localIP = sock.gethostbyaddr('192.168.2.41')[0]
-localIP = sock.gethostbyname("localhost")
+hostname = sock.gethostname()
+localIP = sock.gethostbyname(hostname)
+print(f'Hostname: {hostname} on docker container')
 port = 5068
 ADDR = (localIP, port)
 FORMAT = 'utf-8'
@@ -13,21 +15,17 @@ DISCONNECTED_MESSAGE = "!DISCONNECTED"
 
 
 def handle_client(conn, addr):
-    # Handle incoming messages from the client
     while True:
         data = conn.recv(1024)
         if not data:
             break
         msg = data.decode('utf-8')
         print(f'Received message from {addr}: {msg}')
-
-    # conn.close()
     print(f'Connection with {addr} closed.')
 
 
 
 def start_server():
-    # Start the server and listen for incoming connections
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
         s.bind(ADDR)
         s.listen()
