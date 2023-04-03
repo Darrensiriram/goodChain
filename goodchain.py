@@ -17,7 +17,7 @@ from utils import helper
 connection = sqlite3.Connection('database_actions/goodchain.db')
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-# localIP = sock.gethostbyaddr('192.168.2.31')[0]
+# localIP = sock.gethostbyaddr('192.168.68.153')[0]
 localIP = sock.gethostbyname("localhost")
 port = 5068
 ADDR = (localIP, port)

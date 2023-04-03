@@ -1,11 +1,12 @@
 import socket as sock
 import threading
+import pickle
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
 # localIP = sock.gethostbyaddr('192.168.2.41')[0]
-hostname = sock.gethostname()
-localIP = sock.gethostbyname(hostname)
-print(f'Hostname: {hostname} on docker container')
+# hostname = sock.gethostname()
+localIP = sock.gethostbyname("localhost")
+# print(f'Hostname: {hostname} on docker container')
 port = 5068
 ADDR = (localIP, port)
 FORMAT = 'utf-8'
@@ -13,14 +14,29 @@ HEADER = 64
 DISCONNECTED_MESSAGE = "!DISCONNECTED"
 
 
-
 def handle_client(conn, addr):
     while True:
         data = conn.recv(1024)
         if not data:
             break
-        msg = data.decode('utf-8')
-        print(f'Received message from {addr}: {msg}')
+        if isinstance(data, bytes):
+            try:
+                msg = pickle.loads(data)
+                print(f"Received message from {addr}: {msg}")
+            except pickle.UnpicklingError:
+                file_data = data.decode('utf-8')
+                if file_data.endswith('.dat'):
+                    file_path = f"network/saved/files/{file_data}"
+                    with open(file_path, 'wb') as f:
+                        f.write(data)
+                    print(f"Received file {file_data} from {addr} and saved it to {file_path}")
+                    continue
+                else:
+                    print(f"Invalid data received from {addr}")
+        else:
+            msg = data.decode('utf-8')
+            print(f'Received message from {addr}: {msg}')
+
     print(f'Connection with {addr} closed.')
 
 

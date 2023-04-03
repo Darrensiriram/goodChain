@@ -86,6 +86,7 @@ def actions(auth_user, connection):
                 continue
         elif int(response) == 3 and helper.compare_hashes('data/block.dat'):
             print("Explore the chain")
+            helper.broadcast_file(poolPath, "localhost", 5068)
             mining_actions.mine_actions.explore_chain()
             sleep(2)
             continue

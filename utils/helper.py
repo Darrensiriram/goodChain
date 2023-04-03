@@ -141,6 +141,7 @@ def broadcast_file(filename, localIP, port):
 
     with open(filename, 'rb') as f:
         filedata = f.read()
+    pickled_file = pickle.dumps(filedata)
     print(f"File broadcasted all over the network: {filename}")
-    s.sendall(filedata)
+    s.sendall(pickled_file)
     print("File sent successfully")
