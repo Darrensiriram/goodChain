@@ -43,19 +43,6 @@ def get_all_tx_in_the_chain():
     else:
         return allTx[0]
 
-'''
-def create_hash(file_path):
-    sha256 = hashlib.sha256()
-    with open(file_path, "rb") as f:
-        for block in iter(lambda: f.read(4096), b""):
-            sha256.update(block)
-    hash_value = sha256.hexdigest()
-    if not os.path.exists("backup"):
-        os.makedirs("backup")
-    with open("backup/backup.txt", "w") as f:
-        f.write(hash_value)
-    return hash_value
-'''
 # fix that is also works on windowss
 def create_hash(file_path):
     sha256 = hashlib.sha256()
@@ -141,7 +128,7 @@ def broadcast_file(filename, localIP, port):
 
     with open(filename, 'rb') as f:
         filedata = f.read()
-    pickled_file = pickle.dumps(filedata)
+    pickled_data = pickle.dumps(filedata)
     print(f"File broadcasted all over the network: {filename}")
-    s.sendall(pickled_file)
+    s.sendall(pickled_data)
     print("File sent successfully")

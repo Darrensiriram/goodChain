@@ -1,4 +1,5 @@
 import socket as sock
+import os
 import threading
 import pickle
 
@@ -12,34 +13,33 @@ ADDR = (localIP, port)
 FORMAT = 'utf-8'
 HEADER = 64
 DISCONNECTED_MESSAGE = "!DISCONNECTED"
+TempPoolPath = 'goodchain/network_actions/tempFiles/temp_pool.dat'
 
 
 def handle_client(conn, addr):
     while True:
-        data = conn.recv(1024)
+        data = conn.recv(4096)
         if not data:
             break
-        if isinstance(data, bytes):
-            try:
-                msg = pickle.loads(data)
-                print(f"Received message from {addr}: {msg}")
-            except pickle.UnpicklingError:
-                file_data = data.decode('utf-8')
-                if file_data.endswith('.dat'):
-                    file_path = f"network/saved/files/{file_data}"
-                    with open(file_path, 'wb') as f:
-                        f.write(data)
-                    print(f"Received file {file_data} from {addr} and saved it to {file_path}")
-                    continue
-                else:
-                    print(f"Invalid data received from {addr}")
-        else:
+        try:
             msg = data.decode('utf-8')
             print(f'Received message from {addr}: {msg}')
-
-    print(f'Connection with {addr} closed.')
-
-
+        except UnicodeDecodeError:
+            try:
+                filename = 'temp_pool.dat'
+                path = os.path.join('/mnt/c/Users/darrens/Documents/codingProjects/goodchain/network_actions/tempFiles', filename) #TODO make it generic
+                if not os.path.exists(path):
+                    with open(path, 'wb') as f:
+                        pickle.dump(data, f)
+                else:
+                    with open(path, 'wb') as f:
+                        f.write(data)
+                print(f"File '{filename}' saved successfully using pickle")
+            except pickle.UnpicklingError:
+                print("Received data is not a valid string or pickle data")
+        except:
+            print("Unexpected error occurred while handling received data")
+            break
 
 def start_server():
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
@@ -51,6 +51,7 @@ def start_server():
             conn, addr = s.accept()
             print(f'Connected with {addr}')
             threading.Thread(target=handle_client, args=(conn, addr)).start()
+            # threading.Thread(target=retrieveString, args=(conn, addr)).start()
 
 
 

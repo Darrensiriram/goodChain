@@ -63,7 +63,6 @@ def actions(auth_user, connection):
                     print("Try again....")
                     sleep(2)
                 else:
-                    #todo implement the feature that broadcast the transaction to the network
                     transferCoinsobject = transferCoins.transfercoins(connection, auth_user, chosen_user, amount,
                                                                       transactionfee)
                     tx = transferCoinsobject.createTx(amount, transactionfee)
@@ -72,6 +71,7 @@ def actions(auth_user, connection):
                     txObject.save_transaction_in_the_pool(txFee)
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
+                    helper.broadcast_file(poolPath, "localhost", 5068)
                     if helper.validateBlock():
                         print("chain is valid")
                         continue
