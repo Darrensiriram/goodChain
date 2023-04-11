@@ -1,5 +1,4 @@
 # goodchain
-Blockhain minor Hogeschool rotterdam
 
 ## Requirement for the application
 1. install python 

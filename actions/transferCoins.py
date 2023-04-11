@@ -10,15 +10,6 @@ import json
 poolPath = 'data/pool.dat'
 
 
-def check_nodes_reachable(node, port):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        sock.settimeout(1)
-        sock.connect((node, port))
-        sock.close()
-        return True
-    except:
-        return False
 
 class transfercoins:
 
@@ -44,20 +35,6 @@ class transfercoins:
             Tx1.add_status("Invalid")
         return Tx1
 
-    @staticmethod
-    def send_transaction_to_nodes(tx, port, node):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if check_nodes_reachable(node, port):
-            try:
-                message = json.dumps(tx)
-                encode_message = message.encode()
-                with sock as s:
-                    s.connect((node, port))
-                    s.sendall(encode_message)
-            except ConnectionError:
-                print(f"Connection error with {node}")
-        else:
-            print(f"{node} is not reachable on port {port}")
 
 
     def createTx(self, amount, transactionfee):

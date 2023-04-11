@@ -1,6 +1,5 @@
 import os
 import subprocess as sp
-import socket as sock
 import threading
 import platform
 # os.system("pip install -r requirements.txt")
@@ -15,15 +14,6 @@ import pathlib
 from utils import helper
 
 connection = sqlite3.Connection('database_actions/goodchain.db')
-
-socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-# localIP = sock.gethostbyaddr('192.168.68.153')[0]
-localIP = sock.gethostbyname("localhost")
-port = 5068
-ADDR = (localIP, port)
-FORMAT = 'utf-8'
-HEADER = 64
-DISCONNECTED_MESSAGE = "!DISCONNECTED"
 
 
 if platform.system() == 'Darwin':
@@ -50,23 +40,10 @@ def print_public_menu():
     """)
 
 
-def start_client():
-    socket.connect(ADDR)
-    print(f'Made a connection with the server {localIP}:{port}...')
-    data = socket.recv(1024)
-    msg = data.decode(FORMAT)
-    print(f'Received response from server: {msg}')
-
-    response = 'Message received'
-    socket.sendall(response.encode(FORMAT))
-
-
-
 
 def startMenu():
     while True:
         os.system('cls' if os.name == 'nt' else 'clear')
-        helper.broadcast("Dit is een test bericht", localIP, port)
         print_public_menu()
         response = input("What would u like to do? \n ")
         if response not in choiceList:
