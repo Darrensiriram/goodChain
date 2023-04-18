@@ -15,8 +15,7 @@ HEADER = 64
 DISCONNECTED_MESSAGE = "!DISCONNECTED"
 TempPoolPath = 'goodchain/network_actions/tempFiles/temp_pool.dat'
 
-
-def handle_client(conn, addr):
+def receiveTx(conn, addr):
     while True:
         data = conn.recv(4096)
         if not data:
@@ -25,21 +24,13 @@ def handle_client(conn, addr):
             msg = data.decode('utf-8')
             print(f'Received message from {addr}: {msg}')
         except UnicodeDecodeError:
-            try:
-                filename = 'temp_pool.dat'
-                path = os.path.join('/mnt/c/Users/darrens/Documents/codingProjects/goodchain/network_actions/tempFiles', filename) #TODO make it generic
-                if not os.path.exists(path):
-                    with open(path, 'wb') as f:
-                        pickle.dump(data, f)
-                else:
-                    with open(path, 'wb') as f:
-                        f.write(data)
-                print(f"File '{filename}' saved successfully using pickle")
-            except pickle.UnpicklingError:
-                print("Received data is not a valid string or pickle data")
-        except:
-            print("Unexpected error occurred while handling received data")
-            break
+            with conn:
+                transaction = pickle.loads(data)
+                print(f"Received transaction: {transaction}")
+                with open('data/pool.dat', 'ab') as f:
+                    pickle.dump(transaction, f)
+
+
 
 def start_server():
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
@@ -50,9 +41,6 @@ def start_server():
         while True:
             conn, addr = s.accept()
             print(f'Connected with {addr}')
-            threading.Thread(target=handle_client, args=(conn, addr)).start()
-            # threading.Thread(target=retrieveString, args=(conn, addr)).start()
-
-
+            threading.Thread(target=receiveTx, args=(conn,addr)).start()
 
 threading.Thread(target=start_server).start()
