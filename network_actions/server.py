@@ -1,35 +1,43 @@
 import socket as sock
-import os
 import threading
 import pickle
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-# localIP = sock.gethostbyaddr('192.168.2.41')[0]
-# hostname = sock.gethostname()
-localIP = sock.gethostbyname("localhost")
-# print(f'Hostname: {hostname} on docker container')
-port = 5068
+localIP = sock.gethostbyname(sock.gethostname())
+port = 5069
 ADDR = (localIP, port)
 FORMAT = 'utf-8'
 HEADER = 64
 DISCONNECTED_MESSAGE = "!DISCONNECTED"
-TempPoolPath = 'goodchain/network_actions/tempFiles/temp_pool.dat'
 
-def receiveTx(conn, addr):
-    while True:
-        data = conn.recv(4096)
-        if not data:
-            break
-        try:
-            msg = data.decode('utf-8')
-            print(f'Received message from {addr}: {msg}')
-        except UnicodeDecodeError:
+transaction_pool = []
+
+
+
+def receiveTx(conn, addr,Address):
+    with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+        s.bind(Address)
+        s.listen()
+        print(f'Server started and listening on {localIP}:{port}...')
+        while True:
+            conn, addr = s.accept()
             with conn:
+                data = conn.recv(4096)
                 transaction = pickle.loads(data)
-                print(f"Received transaction: {transaction}")
                 with open('data/pool.dat', 'ab') as f:
                     pickle.dump(transaction, f)
+                    transaction_pool.append(transaction)
+            print(transaction_pool)
 
+
+
+def send_transaction(transaction):
+    with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+        s.connect((localIP, port))
+        serialized_transaction = pickle.dumps(transaction)
+        s.sendall(serialized_transaction)
+        print("Message will be send")
+        s.close()
 
 
 def start_server():
@@ -41,6 +49,7 @@ def start_server():
         while True:
             conn, addr = s.accept()
             print(f'Connected with {addr}')
-            threading.Thread(target=receiveTx, args=(conn,addr)).start()
+            threading.Thread(target=receiveTx, args=(conn, addr, ADDR)).start()
+
 
 threading.Thread(target=start_server).start()

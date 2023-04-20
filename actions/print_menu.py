@@ -5,7 +5,7 @@ from actions import mining_actions
 from database_actions import login
 from time import sleep
 from utils import helper
-from network_actions import network
+from network_actions import server
 
 poolPath = 'data/pool.dat'
 choiceList = ("1", "2", "3", '4', '5', '6', '7')
@@ -37,7 +37,6 @@ def actions(auth_user, connection):
 
     while True:
         print_menu_loggedIn(auth_user, connection)
-        network.Network.load_transactions(network.Network())
         response = input("What would u like to do? \n")
         if response not in choiceList:
             print("Please select a valid option")
@@ -73,7 +72,7 @@ def actions(auth_user, connection):
                     txObject.save_transaction_in_the_pool(txFee)
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
-                    network.Network.send_transaction(network.Network(), tx)
+                    server.send_transaction(tx)
                     if helper.validateBlock():
                         print("chain is valid")
                         continue
@@ -88,7 +87,6 @@ def actions(auth_user, connection):
                 continue
         elif int(response) == 3 and helper.compare_hashes('data/block.dat'):
             print("Explore the chain")
-            helper.broadcast_file(poolPath, "localhost", 5068)
             mining_actions.mine_actions.explore_chain()
             sleep(2)
             continue
