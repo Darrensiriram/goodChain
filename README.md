@@ -1,5 +1,4 @@
 # goodchain
-Blockhain minor Hogeschool rotterdam
 
 ## Requirement for the application
 1. install python 
@@ -12,4 +11,42 @@ Blockhain minor Hogeschool rotterdam
 2. run the command: `python3 goodchain.py`
 **Note** make sure ur first complete point 3 in the application
 
+
+## LunarVim Basic Commands
+This is a list of some basic commands for LunarVim, a powerful and customizable Vim-based IDE.
+
+### Navigation
+* Go to end of the file: G
+* Go to top of the file: gg
+* Go to line number: :<line_number>
+
+### Editing
+* Comment code: gcc (in normal mode)
+* Select all: ggVG (in normal mode)
+* Delete line: dd (in normal mode)
+* Undo: u
+* Redo: ctrl+r
+* Saving and Quitting
+* Save file: :w
+* Quit: :q
+* Force quit (discard changes): :q!
+
+### Plugins
+LunarVim comes with many plugins pre-installed. Here are a few basic commands for some of them:
+
+### Telescope
+Find files: :Telescope find_files
+`Search for string in files: :Telescope live_grep`
+
+### NERDTree
+* Open NERDTree: :NERDTreeToggle
+
+### Git
+* Git add current file: :Git add %
+* Git commit: :Git commit
+
+### Customization
+LunarVim is highly customizable. You can add your own keybindings and configure plugins in the config.lua file located in the ~/.config/lvim directory.
+
+For more information on customization, please refer to the LunarVim documentation.j
 
