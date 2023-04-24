@@ -3,9 +3,7 @@ from time import sleep
 from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from blockchainActions.Transaction import *
 from utils.helper import *
-import subprocess as sp
 import socket
-import json
 
 poolPath = 'data/pool.dat'
 

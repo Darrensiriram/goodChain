@@ -8,6 +8,8 @@ REWARD_VALUE = 25.0
 NORMAL = 0
 REWARD = 1
 
+connection = sqlite3.Connection('database_actions/goodchain.db')
+
 from blockchainActions.Signature import *
 
 class Tx:
@@ -92,12 +94,12 @@ class Tx:
     def __repr__(self):
         repr_str = "INPUTS:\n"
         for addr, amt in self.inputs:
-            repr_str = repr_str + str(amt) + " from " + get_user_name_by_pub_key(pbcKey=addr.decode('utf-8')) + "\n"
+            repr_str = repr_str + str(amt) + " from " + get_user_name_by_pub_key(connection,pbcKey=addr.decode('utf-8')) + "\n"
             # repr_str = repr_str + str(amt) + "from" + str(addr) + "\n"
 
         repr_str += "OUTPUTS:\n"
         for addr, amt in self.outputs:
-            repr_str = repr_str + str(amt) + " to " + get_user_name_by_pub_key(pbcKey=addr.decode('utf-8')) + "\n"
+            repr_str = repr_str + str(amt) + " to " + get_user_name_by_pub_key(connection,pbcKey=addr.decode('utf-8')) + "\n"
             # repr_str = repr_str + str(amt) + "to" + str(addr) + "\n"
 
         repr_str += "EXTRA REQUIRED SIGNATURES:\n"
