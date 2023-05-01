@@ -1,31 +1,31 @@
 version: '3'
 services:
-  # goodchain-server:
-  #   build: .
-  #   container_name: goodchain-server
-  #   restart: always
-  #   ports:
-  #     - "5068:5068"
-  #   volumes:
-  #     - "./data:/app/data"
-  #   environment:
-  #     - PYTHONUNBUFFERED=1
-  #   command: ["python", "network_actions/server.py"]
-  #   networks:
-  #     - default
-  goodchain-client:
-    build: .
-    container_name: goodchain-client
-    ports:
-      - "5067:5067"
-    volumes:
-        - "./data:/app/data"
-        - "./client:/app/client"
-    environment:
+   goodchain-server:
+     build: .
+     container_name: goodchain-server
+     restart: always
+     ports:
+       - "5068:5068"
+     volumes:
+       - "./data:/app/data"
+     extra_hosts:
+      - "host.docker.internal:host-gateway"
+     environment:
         - PYTHONUNBUFFERED=1
-    command: ["python", "goodchain.py"]
-    networks:
-      - default
+#     command: ["python", "network_actions/server.py"]
+#  goodchain-client:
+#    build: .
+#    container_name: goodchain-client
+#    ports:
+#      - "5067:5067"
+#    volumes:
+#        - "./data:/app/data"
+#        - "./client:/app/client"
+#    environment:
+#        - PYTHONUNBUFFERED=1
+#    command: ["python", "goodchain.py"]
+#    networks:
+#      - default
 
 networks:
     default:

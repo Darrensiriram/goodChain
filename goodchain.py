@@ -1,11 +1,7 @@
 import os
-import subprocess as sp
-import threading
 import platform
 # os.system("pip install -r requirements.txt")
-import sqlite3
 from getpass import getpass
-import threading
 from actions.mining_actions import *
 from database_actions import login
 from database_actions import signup as s

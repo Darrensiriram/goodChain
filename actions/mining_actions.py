@@ -81,7 +81,7 @@ class mine_actions:
 
     @staticmethod
     def load_all_transaction_per_block():
-        all_transactions_in_the_pool = transfercoins.get_transactions_in_pool()
+        all_transactions_in_the_pool = transfer_coins.get_transactions_in_pool()
         temp = []
         transactionBlock = [[]]
         mintx = 5
@@ -138,4 +138,4 @@ class mine_actions:
     @staticmethod
     def clear_transaction_after_mining(blockchain):
         for x in blockchain:
-            transfercoins.delete_transaction_in_pool(x)
+            transfer_coins.delete_transaction_in_pool(x)
