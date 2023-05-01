@@ -5,73 +5,101 @@ import pickle
 from importlib import import_module
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-localIP = sock.gethostbyname("192.168.2.4")
+localIP = sock.gethostbyname("192.168.2.44")
 port = 5068
 ADDR = (localIP, port)
 FORMAT = 'utf-8'
 HEADER = 64
 DISCONNECTED_MESSAGE = "!DISCONNECTED"
 
-def receiveTx(conn, addr):
-    my_module = import_module("actions.transferCoins")
+# def receiveTx(conn, addr):
+#     with conn:
+#         print("Receiving block file...")
+#         data = conn.recv(8096)
+#         block = pickle.loads(data)
+#         with open('data/block.dat', 'wb') as f:
+#             f.write(block)
+#         print("Block file received and written to disk.")
+
+def receive(conn, addr):
     data = conn.recv(8096)
-    unloaded_data = pickle.loads(data)
-    if isinstance(unloaded_data, bytes):
-        print("Block file received.")
-        data = b""
-        while True:
-            print("Receiving block file...")
-            packet = conn.recv(8096)
-            if not packet: break
-            data += packet
-            try:
-                print("Unpickling block file...")
+    data_dict = pickle.loads(data)
+    if isinstance(data_dict, dict):
+        if data_dict.get('Type') == 'Transaction':
+            with conn:
+                print("Receiving block file...")
+                data = conn.recv(8096)
+                pool = pickle.loads(data)
+                with open('data/pool.dat', 'wb') as f:
+                    f.write(pool)
+                print("pool file received and written to disk.")
+
+        elif data_dict.get('Type') == 'Block':
+            with conn:
+                print("Receiving block file...")
+                data = conn.recv(8096)
                 block = pickle.loads(data)
-                with open('data/block.dat', 'ab+') as f:
+                with open('data/block.dat', 'wb') as f:
                     f.write(block)
                 print("Block file received and written to disk.")
-                break
-            except pickle.UnpicklingError:
-                continue
+        else:
+            print("Unknown data type received.")
     else:
-        txInputs = unloaded_data["inputs"][0][1]
-        txSender = unloaded_data["inputs"][0][0]
-        txSigs = unloaded_data["signatures"][0]
-        txOutputs = unloaded_data["outputs"][0][1]
-        txReceiver = unloaded_data["outputs"][0][0]
-        txStatus = unloaded_data["status"][0]
-        txId = unloaded_data["txId"]
-        auth_user = unloaded_data["auth_user"]
-        print(
-            f"inputs: {txInputs} \nSender: {txSender} \nsigs: {txSigs} \nReceiver: {txReceiver} \noutputs: {txOutputs} \nstatus: {txStatus} \ntxId: {txId} \nauth_user: {auth_user} \n")
-        transaction = my_module.transfer_coins.createTxNetwork(txSender, txReceiver, txSigs, txInputs, txOutputs,auth_user)
-        print(transaction)
+        print("Unknown data received.")
 
-def send_transaction(transaction, auth_user):
+
+
+def send_data(data_type):
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
         s.connect((localIP, port))
-        tx_dict = {
-            "Type": "Transaction",
-            "inputs": transaction.inputs,
-            "signatures": transaction.sigs,
-            "outputs": transaction.outputs,
-            "status": transaction.status,
-            "txId": transaction.txid,
-            "auth_user": auth_user,
-        }
-        s.sendall(pickle.dumps(tx_dict))
-        print("Message will be sent")
+        if data_type == 'pool':
+            with open('data/pool.dat', 'rb') as f:
+                data = f.read()
+                s.sendall(pickle.dumps({'Type': 'pool', 'Data': data}))
+                print("Transaction pool sent.")
+        elif data_type == 'block':
+            with open('data/block.dat', 'rb') as f:
+                data = f.read()
+                s.sendall(pickle.dumps({'Type': 'block', 'Data': data}))
+                print("Block file sent.")
         s.close()
 
 
-def send_block():
-    with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
-        s.connect((localIP, port))
-        with open('data/block.dat', 'rb') as f:
-            data = f.read()
-            s.sendall(pickle.dumps(data))
-            print("Block file sent.")
-        s.close()
+
+# def send_transaction(transaction, auth_user):
+#     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+#         s.connect((localIP, port))
+#         tx_dict = {
+#             "Type": "Transaction",
+#             "inputs": transaction.inputs,
+#             "signatures": transaction.sigs,
+#             "outputs": transaction.outputs,
+#             "status": transaction.status,
+#             "txId": transaction.txid,
+#             "auth_user": auth_user,
+#         }
+#         s.sendall(pickle.dumps(tx_dict))
+#         print("Message will be sent")
+#         s.close()
+
+
+# def send_tx():
+#     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+#         s.connect((localIP, port))
+#         with open('data/pool.dat', 'rb') as f:
+#             data = f.read()
+#             s.sendall(pickle.dumps(data))
+#             print("Transaction file sent.")
+#         s.close()
+#
+# def send_block():
+#     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+#         s.connect((localIP, port))
+#         with open('data/block.dat', 'rb') as f:
+#             data = f.read()
+#             s.sendall(pickle.dumps(data))
+#             print("Block file sent.")
+#         s.close()
 
 def start_server():
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
@@ -82,7 +110,7 @@ def start_server():
         while True:
             conn, addr = s.accept()
             print(f'Connected with {addr}')
-            threading.Thread(target=receiveTx, args=(conn, addr)).start()
+            threading.Thread(target=receive, args=(conn,addr)).start()
 
 
 threading.Thread(target=start_server).start()
