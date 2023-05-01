@@ -64,15 +64,14 @@ def actions(auth_user, connection):
                     print("Try again....")
                     sleep(2)
                 else:
-                    transferCoinsobject = transferCoins.transfercoins(connection, auth_user, chosen_user, amount,
-                                                                      transactionfee)
+                    transferCoinsobject = transferCoins.transfer_coins(connection, auth_user, chosen_user, amount, transactionfee)
                     tx = transferCoinsobject.createTx(amount, transactionfee)
-                    txObject = transferCoins.transfercoins(connection, auth_user, "system_user", transactionfee, amount )
-                    txFee =  txObject.createSystemTx(transactionfee, amount)
+                    txObject = transferCoins.transfer_coins(connection, auth_user, "system_user", transactionfee, amount)
+                    txFee = txObject.createSystemTx(transactionfee, amount)
                     txObject.save_transaction_in_the_pool(txFee)
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
-                    server.send_transaction(tx)
+                    server.send_transaction(tx, auth_user)
                     if helper.validateBlock():
                         print("chain is valid")
                         continue
@@ -106,19 +105,19 @@ def actions(auth_user, connection):
                 print("Pool is empty")
             sleep(4)
         elif int(response) == 5 and helper.compare_hashes('data/block.dat'):
-            tcObject = transferCoins.transfercoins(connection, auth_user)
-            if transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject) == False:
+            tcObject = transferCoins.transfer_coins(connection, auth_user)
+            if transferCoins.transfer_coins.cancel_transaction_in_the_pool(tcObject) == False:
                 print("Pool is empty")
             else:
                 print("Cancel a transaction\n")
-                transferCoins.transfercoins.cancel_transaction_in_the_pool(tcObject)
+                transferCoins.transfer_coins.cancel_transaction_in_the_pool(tcObject)
             sleep(2)
             continue
         elif int(response) == 6 and helper.compare_hashes('data/block.dat'):
             loginObject = login.login(connection)
-            if transferCoins.transfercoins.get_total_transaction_in_pool() < 5:
+            if transferCoins.transfer_coins.get_total_transaction_in_pool() < 5:
                 print("There are not enough transaction in the pool.")
-                print(f"There are currently {transferCoins.transfercoins.get_total_transaction_in_pool()} in the pool.")
+                print(f"There are currently {transferCoins.transfer_coins.get_total_transaction_in_pool()} in the pool.")
                 sleep(2)
             elif loginObject.get_current_connected_count()[0] < 4:
                 print("sorry not enough members have valided the chain")
@@ -146,9 +145,9 @@ def actions(auth_user, connection):
                                 mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
                                 loginObject.set_default_value_connectivity()
                                 loginObject.update_time_when_mine()
-                                transferCoinsobject = transferCoins.transfercoins(connection, auth_user, "system_user",
-                                                                                  25,
-                                                                                  0)
+                                transferCoinsobject = transferCoins.transfer_coins(connection, auth_user, "system_user",
+                                                                                   25,
+                                                                                   0)
                                 tx = transferCoinsobject.createSystemTx(25, 0)
                                 transferCoinsobject.save_transaction_in_the_pool(tx)
                                 checkBalanceObject.update_balance()
