@@ -152,6 +152,7 @@ def actions(auth_user, connection):
                                 transferCoinsobject.save_transaction_in_the_pool(tx)
                                 checkBalanceObject.update_balance()
                                 helper.create_hash('data/block.dat')
+                                server.send_block()
                                 break
                     except:
                         print("Oops That is not a valid option")

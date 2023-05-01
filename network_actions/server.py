@@ -5,7 +5,7 @@ import pickle
 from importlib import import_module
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-localIP = sock.gethostbyname("192.168.68.130")
+localIP = sock.gethostbyname("192.168.2.4")
 port = 5068
 ADDR = (localIP, port)
 FORMAT = 'utf-8'
@@ -16,7 +16,24 @@ def receiveTx(conn, addr):
     my_module = import_module("actions.transferCoins")
     data = conn.recv(8096)
     unloaded_data = pickle.loads(data)
-    if unloaded_data["Type"] == "Transaction":
+    if isinstance(unloaded_data, bytes):
+        print("Block file received.")
+        data = b""
+        while True:
+            print("Receiving block file...")
+            packet = conn.recv(8096)
+            if not packet: break
+            data += packet
+            try:
+                print("Unpickling block file...")
+                block = pickle.loads(data)
+                with open('data/block.dat', 'ab+') as f:
+                    f.write(block)
+                print("Block file received and written to disk.")
+                break
+            except pickle.UnpicklingError:
+                continue
+    else:
         txInputs = unloaded_data["inputs"][0][1]
         txSender = unloaded_data["inputs"][0][0]
         txSigs = unloaded_data["signatures"][0]
@@ -26,7 +43,7 @@ def receiveTx(conn, addr):
         txId = unloaded_data["txId"]
         auth_user = unloaded_data["auth_user"]
         print(
-            f"inputs: {txInputs} \nSender: {txSender} \nsigs: {txSigs} \nReceiver: {txReceiver} \noutputs: {txOutputs} \nstatus: {txStatus} \ntxId: {txId} \nauth_user: {auth_user} \n ")
+            f"inputs: {txInputs} \nSender: {txSender} \nsigs: {txSigs} \nReceiver: {txReceiver} \noutputs: {txOutputs} \nstatus: {txStatus} \ntxId: {txId} \nauth_user: {auth_user} \n")
         transaction = my_module.transfer_coins.createTxNetwork(txSender, txReceiver, txSigs, txInputs, txOutputs,auth_user)
         print(transaction)
 
@@ -47,17 +64,14 @@ def send_transaction(transaction, auth_user):
         s.close()
 
 
-def send_block(block):
+def send_block():
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
         s.connect((localIP, port))
-        block_dict = {
-            "Type": "Block",
-            "block": block
-        }
-        s.sendall(pickle.dumps(block_dict))
-        print("Message will be sent")
+        with open('data/block.dat', 'rb') as f:
+            data = f.read()
+            s.sendall(pickle.dumps(data))
+            print("Block file sent.")
         s.close()
-
 
 def start_server():
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
