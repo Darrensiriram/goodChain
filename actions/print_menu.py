@@ -71,7 +71,8 @@ def actions(auth_user, connection):
                     txObject.save_transaction_in_the_pool(txFee)
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
-                    server.send_transaction(tx, auth_user)
+                    # server.send_transaction(tx, auth_user)
+                    server.send_data("pool")
                     if helper.validateBlock():
                         print("chain is valid")
                         continue
@@ -152,7 +153,8 @@ def actions(auth_user, connection):
                                 transferCoinsobject.save_transaction_in_the_pool(tx)
                                 checkBalanceObject.update_balance()
                                 helper.create_hash('data/block.dat')
-                                server.send_block()
+                                server.send_data("block")
+                                server.send_data("pool")
                                 break
                     except:
                         print("Oops That is not a valid option")

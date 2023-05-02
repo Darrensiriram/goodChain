@@ -58,14 +58,21 @@ def send_data(data_type):
         if data_type == 'pool':
             with open('data/pool.dat', 'rb') as f:
                 data = f.read()
-                s.sendall(pickle.dumps({'Type': 'pool', 'Data': data}))
+                chunk_size = 65535  # change this to the desired chunk size
+                for i in range(0, len(data), chunk_size):
+                    chunk = data[i:i+chunk_size]
+                    s.sendall(pickle.dumps({'Type': 'pool', 'Data': chunk}))
                 print("Transaction pool sent.")
         elif data_type == 'block':
             with open('data/block.dat', 'rb') as f:
                 data = f.read()
-                s.sendall(pickle.dumps({'Type': 'block', 'Data': data}))
+                chunk_size = 65535  # change this to the desired chunk size
+                for i in range(0, len(data), chunk_size):
+                    chunk = data[i:i+chunk_size]
+                    s.sendall(pickle.dumps({'Type': 'block', 'Data': chunk}))
                 print("Block file sent.")
         s.close()
+
 
 
 
