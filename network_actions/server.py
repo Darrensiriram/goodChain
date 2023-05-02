@@ -22,23 +22,33 @@ DISCONNECTED_MESSAGE = "!DISCONNECTED"
 #         print("Block file received and written to disk.")
 
 def receive(conn, addr):
-    data = conn.recv(65535)
-    data_dict = pickle.loads(data)
-    if isinstance(data_dict, dict):
-        if data_dict.get('Type') == 'pool':
-            with open('data/pool.dat', 'wb') as f:
-                f.write(data_dict.get('Data'))
-            print("Transaction pool received and written to disk.")
+    buffer = b""
+    while True:
+        data = conn.recv(65535)
+        if not data:
+            break
+        buffer += data
 
-        elif data_dict.get('Type') == 'block':
-            print(data_dict.get('Data'))
-            with open('data/block.dat', 'wb') as f:
-                f.write(data_dict.get('Data'))
-            print("Block file received and written to disk.")
+    try:
+        data_dict = pickle.loads(buffer)
+        if isinstance(data_dict, dict):
+            if data_dict.get('Type') == 'pool':
+                with open('data/pool.dat', 'wb') as f:
+                    f.write(data_dict.get('Data'))
+                print("Transaction pool received and written to disk.")
+
+            elif data_dict.get('Type') == 'block':
+                print(data_dict.get('Data'))
+                with open('data/block.dat', 'wb') as f:
+                    f.write(data_dict.get('Data'))
+                print("Block file received and written to disk.")
+            else:
+                print("Unknown data type received.")
         else:
-            print("Unknown data type received.")
-    else:
-        print("Unknown data received.")
+            print("Unknown data received.")
+    except pickle.UnpicklingError as e:
+        print(f"Error unpickling data: {e}")
+
 
 
 
