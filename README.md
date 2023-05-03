@@ -4,6 +4,10 @@
 1. install python 
 2. install pip
 3. run the following command: `pip3 install -r requirementes.txt`
+4. make sure u have the same goodchain database
+5. Alter the server.py file:
+    - `server_ip ` = ip of your own machine
+    - `client_ip ` = ip of the receiving machine
 
 
 ## Run the application
