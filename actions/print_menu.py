@@ -112,6 +112,7 @@ def actions(auth_user, connection):
             else:
                 print("Cancel a transaction\n")
                 transferCoins.transfer_coins.cancel_transaction_in_the_pool(tcObject)
+                server.send_data("pool")
             sleep(2)
             continue
         elif int(response) == 6 and helper.compare_hashes('data/block.dat'):

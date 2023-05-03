@@ -5,9 +5,10 @@ import pickle
 from importlib import import_module
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-localIP = sock.gethostbyname("192.168.2.44")
+server_ip = sock.gethostbyname("192.168.2.4")
+client_ip = sock.gethostbyname("192.168.2.44")
 port = 5068
-ADDR = (localIP, port)
+ADDR = (server_ip, port)
 FORMAT = 'utf-8'
 HEADER = 64
 DISCONNECTED_MESSAGE = "!DISCONNECTED"
@@ -28,7 +29,6 @@ def receive(conn, addr):
         if not data:
             break
         buffer += data
-
     try:
         data_dict = pickle.loads(buffer)
         if isinstance(data_dict, dict):
@@ -38,7 +38,6 @@ def receive(conn, addr):
                 print("Transaction pool received and written to disk.")
 
             elif data_dict.get('Type') == 'block':
-                print(data_dict.get('Data'))
                 with open('data/block.dat', 'wb') as f:
                     f.write(data_dict.get('Data'))
                 print("Block file received and written to disk.")
@@ -48,13 +47,14 @@ def receive(conn, addr):
             print("Unknown data received.")
     except pickle.UnpicklingError as e:
         print(f"Error unpickling data: {e}")
+    conn.close()
 
 
 
 
 def send_data(data_type):
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
-        s.connect((localIP, port))
+        s.connect((client_ip, port))
         if data_type == 'pool':
             with open('data/pool.dat', 'rb') as f:
                 data = f.read()
@@ -115,7 +115,7 @@ def start_server():
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
         s.bind(ADDR)
         s.listen()
-        print(f'Server started and listening on {localIP}:{port}...')
+        print(f'Server started and listening on {server_ip}:{port}...')
 
         while True:
             conn, addr = s.accept()
