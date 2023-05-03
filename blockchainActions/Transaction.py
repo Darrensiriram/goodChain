@@ -94,13 +94,13 @@ class Tx:
     def __repr__(self):
         repr_str = "INPUTS:\n"
         for addr, amt in self.inputs:
-            #repr_str = repr_str + str(amt) + " from " + get_user_name_by_pub_key(connection,pbcKey=addr.decode('utf-8')) + "\n"
-            repr_str = repr_str + str(amt) + "from" + str(addr) + "\n"
+            repr_str = repr_str + str(amt) + " from " + get_user_name_by_pub_key(connection,pbcKey=addr.decode('utf-8')) + "\n"
+            #repr_str = repr_str + str(amt) + "from" + str(addr) + "\n"
 
         repr_str += "OUTPUTS:\n"
         for addr, amt in self.outputs:
-            #repr_str = repr_str + str(amt) + " to " + get_user_name_by_pub_key(connection,pbcKey=addr.decode('utf-8')) + "\n"
-            repr_str = repr_str + str(amt) + "to" + str(addr) + "\n"
+            repr_str = repr_str + str(amt) + " to " + get_user_name_by_pub_key(connection,pbcKey=addr.decode('utf-8')) + "\n"
+            #repr_str = repr_str + str(amt) + "to" + str(addr) + "\n"
 
         repr_str += "EXTRA REQUIRED SIGNATURES:\n"
         for req_sig in self.reqd:
