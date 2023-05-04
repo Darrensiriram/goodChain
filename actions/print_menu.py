@@ -153,7 +153,6 @@ def actions(auth_user, connection):
                                 tx = transferCoinsobject.createSystemTx(25, 0)
                                 transferCoinsobject.save_transaction_in_the_pool(tx)
                                 checkBalanceObject.update_balance()
-                                helper.create_hash('data/block.dat')
                                 server.send_data("block")
                                 server.send_data("pool")
                                 break
