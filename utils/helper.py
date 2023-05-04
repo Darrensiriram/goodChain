@@ -67,13 +67,19 @@ def compare_hashes(file_path):
         for block in iter(lambda: f.read(4096), b""):
             sha256.update(block)
     current_hash = sha256.hexdigest()
-    if current_hash == backup_hash:
+    if validateBlock():
         print("The hash values match.")
         return True
     else:
         print("Tampering detected!")
-        # create_hash(file_path)
         return False
+    # if current_hash == backup_hash:
+    #     print("The hash values match.")
+    #     return True
+    # else:
+    #     print("Tampering detected!")
+    #     # create_hash(file_path)
+    #     return False
 
 
 def retrieve_blocks():
