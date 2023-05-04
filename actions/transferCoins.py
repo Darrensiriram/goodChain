@@ -152,12 +152,11 @@ class transfer_coins:
             return False
         counter = 0
         for i in trans:
-            print(f"TRANSACTION: {counter}")
-            print(i)
+            print(f"TRANSACTION {counter}:\n {i}")
             counter += 1
-        sleep(2)
+
         while True:
-            chosenT = int(input("Please choose which transaction u which to delete from the pool:  "))
+            chosenT = int(input("Please choose which transaction you wish to delete from the pool: "))
             if chosenT < len(trans):
                 result = pluckStr(trans[chosenT].userId, self.auth_user)
                 if result == self.auth_user:
@@ -166,7 +165,7 @@ class transfer_coins:
                     print("U can not delete an transaction that is not yours!")
                 break
             else:
-                print("Option is invalid")
+                print("Option is invalid.")
                 continue
 
         f1 = open(poolPath, 'rb+')
