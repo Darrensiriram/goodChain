@@ -107,7 +107,7 @@ def actions(auth_user, connection):
             sleep(4)
         elif int(response) == 5 and helper.compare_hashes('data/block.dat'):
             tcObject = transferCoins.transfer_coins(connection, auth_user)
-            if transferCoins.transfer_coins.cancel_transaction_in_the_pool(tcObject) == False:
+            if len(helper.get_all_transaction_in_the_pool()) <= 0:
                 print("Pool is empty")
             else:
                 print("Cancel a transaction\n")
