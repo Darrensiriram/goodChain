@@ -11,7 +11,6 @@ from utils import helper
 
 connection = sqlite3.Connection('database_actions/goodchain.db')
 
-
 if platform.system() == 'Darwin':
     if os.path.exists('data'):
         os.system("touch data/block.dat")

@@ -1,26 +1,15 @@
 import socket as sock
-import sqlite3
 import threading
 import pickle
-from importlib import import_module
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-server_ip = sock.gethostbyname("192.168.2.4")
-client_ip = sock.gethostbyname("192.168.2.44")
+server_ip = sock.gethostbyname("145.137.73.143")
+client_ip = sock.gethostbyname("145.137.31.136")
 port = 5068
 ADDR = (server_ip, port)
 FORMAT = 'utf-8'
 HEADER = 64
 DISCONNECTED_MESSAGE = "!DISCONNECTED"
-
-# def receiveTx(conn, addr):
-#     with conn:
-#         print("Receiving block file...")
-#         data = conn.recv(8096)
-#         block = pickle.loads(data)
-#         with open('data/block.dat', 'wb') as f:
-#             f.write(block)
-#         print("Block file received and written to disk.")
 
 def receive(conn, addr):
     buffer = b""
@@ -50,15 +39,13 @@ def receive(conn, addr):
     conn.close()
 
 
-
-
 def send_data(data_type):
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
         s.connect((client_ip, port))
         if data_type == 'pool':
             with open('data/pool.dat', 'rb') as f:
                 data = f.read()
-                chunk_size = 65535  # change this to the desired chunk size
+                chunk_size = 65535
                 for i in range(0, len(data), chunk_size):
                     chunk = data[i:i+chunk_size]
                     s.sendall(pickle.dumps({'Type': 'pool', 'Data': chunk}))
@@ -66,50 +53,12 @@ def send_data(data_type):
         elif data_type == 'block':
             with open('data/block.dat', 'rb') as f:
                 data = f.read()
-                chunk_size = 65535  # change this to the desired chunk size
+                chunk_size = 65535
                 for i in range(0, len(data), chunk_size):
                     chunk = data[i:i+chunk_size]
                     s.sendall(pickle.dumps({'Type': 'block', 'Data': chunk}))
                 print("Block file sent.")
         s.close()
-
-
-
-
-# def send_transaction(transaction, auth_user):
-#     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
-#         s.connect((localIP, port))
-#         tx_dict = {
-#             "Type": "Transaction",
-#             "inputs": transaction.inputs,
-#             "signatures": transaction.sigs,
-#             "outputs": transaction.outputs,
-#             "status": transaction.status,
-#             "txId": transaction.txid,
-#             "auth_user": auth_user,
-#         }
-#         s.sendall(pickle.dumps(tx_dict))
-#         print("Message will be sent")
-#         s.close()
-
-
-# def send_tx():
-#     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
-#         s.connect((localIP, port))
-#         with open('data/pool.dat', 'rb') as f:
-#             data = f.read()
-#             s.sendall(pickle.dumps(data))
-#             print("Transaction file sent.")
-#         s.close()
-#
-# def send_block():
-#     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
-#         s.connect((localIP, port))
-#         with open('data/block.dat', 'rb') as f:
-#             data = f.read()
-#             s.sendall(pickle.dumps(data))
-#             print("Block file sent.")
-#         s.close()
 
 def start_server():
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
