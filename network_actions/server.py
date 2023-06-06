@@ -56,30 +56,10 @@ def receive(conn, addr):
     conn.close()
 
 
-def send_query(query):
+def send_data(data_type):
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
         s.connect((client_ip, port))
-        s.sendall(pickle.dumps({'Type': 'query', 'Data': query}))
-        s.close()
-
-
-def execute_query(query):
-    connection = sqlite3.connect('database_actions/goodchain.db')
-    cursor = connection.cursor()
-    try:
-        cursor.execute(query)
-        connection.commit()
-        print("Query executed successfully.")
-    except sqlite3.Error as e:
-        print("Error executing query:", str(e))
-    finally:
-        connection.close()
-
-def send_data(data_type):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((client_ip, port))
         if data_type == 'pool':
-            # Send transaction pool data
             with open('data/pool.dat', 'rb') as f:
                 data = f.read()
                 chunk_size = 65535
@@ -88,7 +68,6 @@ def send_data(data_type):
                     s.sendall(pickle.dumps({'Type': 'pool', 'Data': chunk}))
                 print("Transaction pool sent.")
         elif data_type == 'block':
-            # Send block file data
             with open('data/block.dat', 'rb') as f:
                 data = f.read()
                 chunk_size = 65535
