@@ -13,8 +13,8 @@ choiceList = ("1", "2", "3", '4', '5', '6', '7')
 
 def print_menu_loggedIn(auth_user, connection):
     cur = connection.cursor()
-    result = cur.execute('SELECT username FROM users WHERE id = ?', (auth_user,)).fetchone()
-    print(f"Username: {result[0]}")
+    result = cur.execute('SELECT username,private_key,public_key FROM users WHERE id = ?', (auth_user,)).fetchone()
+    print(f"Username: {result[0]} \nPrivate key: \n {result[1]} \nPublic key:\n {result[2]} \n")
     print("""
     1 - Transfer Coins
     2 - Check the Balance
@@ -147,7 +147,7 @@ def actions(auth_user, connection):
                                 mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
                                 loginObject.set_default_value_connectivity()
                                 loginObject.update_time_when_mine()
-                                transferCoinsobject = transferCoins.transfer_coins(connection, auth_user, "system_user",
+                                transferCoinsobject = transferCoins.transfer_coins(connection, auth_user, "system",
                                                                                    25,
                                                                                    0)
                                 tx = transferCoinsobject.createSystemTx(25, 0)

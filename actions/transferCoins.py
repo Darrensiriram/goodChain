@@ -88,7 +88,7 @@ class transfer_coins:
 
     def get_key_credentials_system_user(self):
         cur = self.connection.cursor()
-        result = cur.execute('SELECT private_key , public_key from users where username = ?', ("system_user",))
+        result = cur.execute('SELECT private_key , public_key from users where username = ?', ("system",))
         for x in result:
             privatekey = x[0]
             publickey = x[1]

@@ -1,6 +1,7 @@
 import socket as sock
 import threading
 import pickle
+import sqlite3
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
 server_ip = sock.gethostbyname("145.137.73.143")
@@ -22,14 +23,25 @@ def receive(conn, addr):
         data_dict = pickle.loads(buffer)
         if isinstance(data_dict, dict):
             if data_dict.get('Type') == 'pool':
+                transactions = data_dict.get('Data')
                 with open('data/pool.dat', 'wb') as f:
-                    f.write(data_dict.get('Data'))
+                    f.write(transactions)
                 print("Transaction pool received and written to disk.")
-
+                for tx in transactions:
+                    if tx.is_valid():
+                        print(f"Transaction {tx} is valid")
+                    else:
+                        print(f"Transaction {tx} is not valid")
             elif data_dict.get('Type') == 'block':
+                # Load the received block data as a Python object
+                blocks = pickle.loads(data_dict.get('Data'))
+                for block in blocks:
+                    block.validate_block()
+                    print(f"Block {block.blockId} is {'valid' if block.valid else 'not valid'}")
+                # Save the validated blocks to disk
                 with open('data/block.dat', 'wb') as f:
-                    f.write(data_dict.get('Data'))
-                print("Block file received and written to disk.")
+                    pickle.dump(blocks, f)
+                print("Block file received and validated, and written to disk.")
             else:
                 print("Unknown data type received.")
         else:
@@ -38,6 +50,44 @@ def receive(conn, addr):
         print(f"Error unpickling data: {e}")
     conn.close()
 
+
+def send_query(query):
+    with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+        s.connect((client_ip, port))
+        s.sendall(pickle.dumps({'Type': 'query', 'Data': query}))
+        s.close()
+
+def receive_query():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(('0.0.0.0', port))
+        s.listen(1)
+        conn, addr = s.accept()
+        with conn:
+            data = conn.recv(65535)
+            if not data:
+                return
+            data_dict = pickle.loads(data)
+            if isinstance(data_dict, dict):
+                if data_dict.get('Type') == 'query':
+                    query = data_dict.get('Data')
+                    print(f"Received query: {query}")
+                    execute_query(query)
+                else:
+                    print("Unknown data type received.")
+            else:
+                print("Unknown data received.")
+
+def execute_query(query):
+    connection = sqlite3.connect('database_actions/goodchain.db')
+    cursor = connection.cursor()
+    try:
+        cursor.execute(query)
+        connection.commit()
+        print("Query executed successfully.")
+    except sqlite3.Error as e:
+        print("Error executing query:", str(e))
+    finally:
+        connection.close()
 
 def send_data(data_type):
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:

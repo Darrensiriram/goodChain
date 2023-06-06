@@ -53,31 +53,32 @@ def create_hash(file_path):
         f.write(hash_value)
     return hash_value
 
-def compare_hashes(file_path):
+
+def compare_hashes(file_path, create_new_hash=False):
     backup_directory = os.path.join(".", "backup")
     backup_file = os.path.join(backup_directory, "backup.txt")
     if not os.path.exists(backup_file):
         return "No backup file found!"
+
+    if create_new_hash:
+        create_hash(file_path)  # Call a function to create a new hash for the file
+
     with open(backup_file, "r") as f:
         backup_hash = f.read()
+
     sha256 = hashlib.sha256()
     with open(file_path, "rb") as f:
         for block in iter(lambda: f.read(4096), b""):
             sha256.update(block)
+
     current_hash = sha256.hexdigest()
-    if validateBlock():
+
+    if current_hash == backup_hash:
         print("The hash values match.")
         return True
     else:
         print("Tampering detected!")
         return False
-    # if current_hash == backup_hash:
-    #     print("The hash values match.")
-    #     return True
-    # else:
-    #     print("Tampering detected!")
-    #     # create_hash(file_path)
-    #     return False
 
 
 def retrieve_blocks():

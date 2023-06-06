@@ -10,6 +10,8 @@ class CBlock:
     previousBlock = None
     blockHash = None
     blockId = None
+    flagValidationStatus = 0
+    valid = None
 
     def __init__(self, data, previousBlock):
         self.data = data
@@ -24,6 +26,14 @@ class CBlock:
         digest.update(bytes(str(self.previousHash), 'utf8'))
         return digest.finalize()
 
+    def update_flag_validation_status(self):
+        if self.previousBlock is not None:
+            previous_valid_flags = self.previousBlock.flagValidationStatus
+            if previous_valid_flags >= 3:
+                self.flagValidationStatus = previous_valid_flags + 1
+            else:
+                self.flagValidationStatus = 0
+
     def is_valid_chain(self):
         if self.previousBlock == None:
             if self.blockHash == self.computeHash():
@@ -34,6 +44,12 @@ class CBlock:
             current_block_validity = self.blockHash == self.computeHash()
             previous_block_validity = self.previousBlock.is_valid_chain()
             return current_block_validity and previous_block_validity
+
+    def validate_block(self):
+        if self.is_valid_chain() and self.flagValidationStatus >= 3:
+            self.valid = True
+        else:
+            self.valid = False
 
     @staticmethod
     def get_prev_block():
