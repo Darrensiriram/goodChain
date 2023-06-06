@@ -27,6 +27,7 @@ class signUp:
         query = "INSERT INTO users (username, password, coins, private_key, public_key) VALUES (?,?,?,?,?)"
         cur.execute(query, [self.username, hashed_pwd, self.coins, self.private_key, self.public_key])
         self.connection.commit()
+        server.send_data("database")
 
     def sign_up_system_user(self):
         private_keyNew, public_keyNew = generate_keys()

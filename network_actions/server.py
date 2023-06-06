@@ -42,10 +42,11 @@ def receive(conn, addr):
                 with open('data/block.dat', 'wb') as f:
                     pickle.dump(blocks, f)
                 print("Block file received and validated, and written to disk.")
-            elif data_dict.get('Type') == 'query':
-                query = data_dict.get('Data')
-                print(f"Received query: {query}")
-                execute_query(query)
+            elif data_dict.get('Type') == 'database':
+                database_data = data_dict.get('Data')
+                with open('database_actions/goodchain.db', 'wb') as f:
+                    f.write(database_data)
+                print("Database file received and overwritten.")
             else:
                 print("Unknown data type received.")
         else:
@@ -75,9 +76,10 @@ def execute_query(query):
         connection.close()
 
 def send_data(data_type):
-    with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((client_ip, port))
         if data_type == 'pool':
+            # Send transaction pool data
             with open('data/pool.dat', 'rb') as f:
                 data = f.read()
                 chunk_size = 65535
@@ -86,6 +88,7 @@ def send_data(data_type):
                     s.sendall(pickle.dumps({'Type': 'pool', 'Data': chunk}))
                 print("Transaction pool sent.")
         elif data_type == 'block':
+            # Send block file data
             with open('data/block.dat', 'rb') as f:
                 data = f.read()
                 chunk_size = 65535
@@ -93,7 +96,13 @@ def send_data(data_type):
                     chunk = data[i:i+chunk_size]
                     s.sendall(pickle.dumps({'Type': 'block', 'Data': chunk}))
                 print("Block file sent.")
+        elif data_type == 'database':
+            with open('database_actions/goodchain.db', 'rb') as f:
+                data = f.read()
+                s.sendall(pickle.dumps({'Type': 'database', 'Data': data}))
+                print("Database file sent.")
         s.close()
+
 
 def start_server():
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:
