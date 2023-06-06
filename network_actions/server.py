@@ -4,8 +4,8 @@ import pickle
 import sqlite3
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-server_ip = sock.gethostbyname("145.137.73.143")
-client_ip = sock.gethostbyname("145.137.31.136")
+server_ip = sock.gethostbyname("192.168.2.18")
+client_ip = sock.gethostbyname("192.168.2.44")
 port = 5068
 ADDR = (server_ip, port)
 FORMAT = 'utf-8'
@@ -42,6 +42,10 @@ def receive(conn, addr):
                 with open('data/block.dat', 'wb') as f:
                     pickle.dump(blocks, f)
                 print("Block file received and validated, and written to disk.")
+            elif data_dict.get('Type') == 'query':
+                query = data_dict.get('Data')
+                print(f"Received query: {query}")
+                execute_query(query)
             else:
                 print("Unknown data type received.")
         else:
@@ -57,25 +61,6 @@ def send_query(query):
         s.sendall(pickle.dumps({'Type': 'query', 'Data': query}))
         s.close()
 
-def receive_query():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind(('0.0.0.0', port))
-        s.listen(1)
-        conn, addr = s.accept()
-        with conn:
-            data = conn.recv(65535)
-            if not data:
-                return
-            data_dict = pickle.loads(data)
-            if isinstance(data_dict, dict):
-                if data_dict.get('Type') == 'query':
-                    query = data_dict.get('Data')
-                    print(f"Received query: {query}")
-                    execute_query(query)
-                else:
-                    print("Unknown data type received.")
-            else:
-                print("Unknown data received.")
 
 def execute_query(query):
     connection = sqlite3.connect('database_actions/goodchain.db')
