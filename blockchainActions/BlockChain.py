@@ -29,7 +29,7 @@ class CBlock:
     def update_flag_validation_status(self):
         if self.previousBlock is not None:
             previous_valid_flags = self.previousBlock.flagValidationStatus
-            if previous_valid_flags >= 3:
+            if previous_valid_flags <= 3:
                 self.flagValidationStatus = previous_valid_flags + 1
             else:
                 self.flagValidationStatus = 0
