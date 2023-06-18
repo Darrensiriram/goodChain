@@ -14,6 +14,8 @@ choiceList = ("1", "2", "3", '4', '5', '6', '7')
 def print_menu_loggedIn(auth_user, connection):
     cur = connection.cursor()
     result = cur.execute('SELECT username,private_key,public_key FROM users WHERE id = ?', (auth_user,)).fetchone()
+    helper.check_transaction_validity()
+    sleep(2)
     print(f"Username: {result[0]} \nPrivate key: \n {result[1]} \nPublic key:\n {result[2]} \n")
     print("""
     1 - Transfer Coins
@@ -66,12 +68,9 @@ def actions(auth_user, connection):
                 else:
                     transferCoinsobject = transferCoins.transfer_coins(connection, auth_user, chosen_user, amount, transactionfee)
                     tx = transferCoinsobject.createTx(amount, transactionfee)
-                    txObject = transferCoins.transfer_coins(connection, auth_user, "system_user", transactionfee, amount)
-                    txFee = txObject.createSystemTx(transactionfee, amount)
-                    txObject.save_transaction_in_the_pool(txFee)
+                    txObject = transferCoins.transfer_coins(connection, auth_user, "system", transactionfee, amount)
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
-                    # server.send_transaction(tx, auth_user)
                     server.send_data("pool")
                     if helper.validateBlock():
                         print("chain is valid")
@@ -153,8 +152,8 @@ def actions(auth_user, connection):
                                 tx = transferCoinsobject.createSystemTx(25, 0)
                                 transferCoinsobject.save_transaction_in_the_pool(tx)
                                 checkBalanceObject.update_balance()
-                                server.send_data("block")
-                                server.send_data("pool")
+                                # server.send_data("block")
+                                # server.send_data("pool")
                                 break
                     except:
                         print("Oops That is not a valid option")
