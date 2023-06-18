@@ -4,6 +4,7 @@ from actions.print_menu import *
 from datetime import datetime
 import time
 auth_user = 0
+from network_actions import server
 
 
 class login:
@@ -52,6 +53,7 @@ class login:
         cur = self.connection.cursor()
         cur.execute('INSERT INTO connectivity (connection_count) VALUES (1)')
         self.connection.commit()
+        server.send_data("database")
 
     def update_current_connected_user(self):
         cur = self.connection.cursor()
@@ -61,6 +63,7 @@ class login:
         else:
             cur.execute('UPDATE connectivity SET connection_count = connection_count + 1 where id = 1 ')
             self.connection.commit()
+            server.send_data("database")
             return "connection_count updated"
 
 
@@ -71,6 +74,7 @@ class login:
         if db_time is None:
             cur.execute('UPDATE connectivity SET currentTime = ? WHERE id = 1',[current_time])
             self.connection.commit()
+            server.send_data("database")
             return False
         three_min = 180
         if current_time > (db_time + float(three_min)):
@@ -82,10 +86,13 @@ class login:
         current_time = time.time()
         cur.execute('UPDATE connectivity SET currentTime = ? WHERE id = 1', [current_time,])
         self.connection.commit()
+        server.send_data("database")
     def set_default_value_connectivity(self):
         cur = self.connection.cursor()
         cur.execute('UPDATE connectivity SET connection_count = 0 where id = 1 ')
         self.connection.commit()
+        server.send_data("database")
+
     def loginUser(self):
         self.update_current_connected_user()
         global auth_user
