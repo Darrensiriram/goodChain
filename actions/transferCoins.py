@@ -27,7 +27,8 @@ class transfer_coins:
         Tx1.add_input(sender_user_pbc_key, amount)
         Tx1.add_output(receiver_user_pbc_key, amount - transactionfee)
         Tx1.sign(sender_user_pk_key)
-        Tx1.add_userId("system_user")
+        Tx1.type = 1
+        Tx1.add_userId("system")
         if Tx1.is_valid():
             Tx1.add_status("Valid")
         else:
@@ -44,33 +45,13 @@ class transfer_coins:
         Tx1.add_output(receiver_user_pbc_key, amount - transactionfee)
         Tx1.sign(sender_user_pk_key)
         Tx1.add_userId(self.auth_user)
+        Tx1.type = 1
         if Tx1.is_valid():
             Tx1.add_status("Valid")
         else:
             Tx1.add_status("Invalid")
         return Tx1
 
-    @staticmethod
-    def createTxNetwork(senderPb_key, receiverPb_key, signature, amount, transactionfee, authUser):
-        conn = sqlite3.connect('database_actions/goodchain.db')
-        c = conn.cursor()
-        c.execute("SELECT private_key FROM users WHERE id=?", (authUser,))
-        private_key = c.fetchone()[0]
-        encoded_pk = private_key.encode('UTF-8')
-        deserializedkey = load_pem_private_key(encoded_pk, password=None)
-        Tx1 = Tx()
-        Tx1.add_input(senderPb_key, amount)
-        Tx1.add_output(receiverPb_key, amount - transactionfee)
-        Tx1.sign(deserializedkey)
-        Tx1.add_userId(authUser)
-        transfer_coins.save_transaction_in_the_pool(Tx1)
-        if Tx1.is_valid():
-            Tx1.add_status("Valid")
-            transfer_coins.save_transaction_in_the_pool(Tx1)
-            return "Transaction is Saved in the pool."
-        else:
-            Tx1.add_status("Invalid")
-            return "Transaction is Invalid."
 
     def createTxFee(self, amount, transactionfee):
         Tx1 = Tx()
