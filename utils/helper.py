@@ -18,6 +18,18 @@ def get_all_transaction_in_the_pool():
             pass
     return allTx
 
+def check_transaction_validity():
+    allTx = get_all_transaction_in_the_pool()
+    print("There are {} transactions in the pool.".format(len(allTx)))
+    i = 0
+    for tx in allTx:
+        if tx.is_valid():
+            print(f"Transaction {i} is valid.")
+        else:
+            print(f"Transaction {i} is not valid.")
+        i += 1
+
+
 def get_user_name_by_pub_key(con, pbcKey=''):
     cur = con.cursor()
     result = cur.execute('SELECT username FROM users WHERE public_key = ?', (pbcKey,)).fetchone()
