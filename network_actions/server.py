@@ -1,7 +1,7 @@
 import socket as sock
 import threading
 import pickle
-import sqlite3
+from utils import helper
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
 server_ip = sock.gethostbyname("192.168.2.18")
@@ -26,6 +26,8 @@ def receive(conn, addr):
                 transactions = data_dict.get('Data')
                 with open('data/pool.dat', 'wb') as f:
                     f.write(transactions)
+                print("Checking if transactions are valid...")
+                helper.check_transaction_validity()
                 print("Transaction pool received and written to disk.")
                 for tx in transactions:
                     if tx.is_valid():
