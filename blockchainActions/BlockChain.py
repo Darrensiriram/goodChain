@@ -1,17 +1,21 @@
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
+from blockchainActions import Signature
 import pickle
 import uuid
 
 blockPath = 'data/block.dat'
+
+
 class CBlock:
     data = None
     previousHash = None
     previousBlock = None
     blockHash = None
     blockId = None
-    flagValidationStatus = 0
     valid = None
+    signatures = []
 
     def __init__(self, data, previousBlock):
         self.data = data
@@ -27,31 +31,28 @@ class CBlock:
         digest.update(bytes(str(self.previousHash), 'utf8'))
         return digest.finalize()
 
-    def update_flag_validation_status(self):
-        if self.previousBlock is not None:
-            previous_valid_flags = self.previousBlock.flagValidationStatus
-            if previous_valid_flags <= 3:
-                self.flagValidationStatus = previous_valid_flags + 1
-            else:
-                self.flagValidationStatus = 0
-        return self.flagValidationStatus
 
     def is_valid_chain(self):
-        if self.previousBlock == None:
+        if self.previousBlock is None:
             if self.blockHash == self.computeHash():
-                return True
-            else:
                 return False
+            else:
+                return True
         else:
+            self.blockHash = self.computeHash()
             current_block_validity = self.blockHash == self.computeHash()
             previous_block_validity = self.previousBlock.is_valid_chain()
             return current_block_validity and previous_block_validity
 
     def validate_block(self):
-        if self.is_valid_chain() and self.flagValidationStatus >= 3:
+        if self.is_valid_chain() and len(self.signatures) >= 3:
             self.valid = True
         else:
             self.valid = False
+
+    def sign_block(self, private_key):
+        signature = Signature.sign(self.blockHash, private_key)
+        self.signatures.append(signature)
 
     @staticmethod
     def get_prev_block():
