@@ -100,15 +100,10 @@ class mine_actions:
         for x in block[index]:
             for y in x:
                 txBlock.addTx(y)
-                txBlock.update_flag_validation_status()
-                if txBlock.flagValidationStatus >= 3:
-                    if txBlock.is_valid():
-                        mine_actions.mine_timer(txBlock)
-                    else:
-                        print("Block validation failed")
-                else:
-                    print("Block's flagValidationStatus is less than 3, cannot mine block")
+                if txBlock.is_valid():
+                    mine_actions.mine_timer(txBlock)
         mine_actions.save_to_chain(txBlock)
+        helper.fixTampering()
 
     def mine_timer(txblock):
         start = time.time()

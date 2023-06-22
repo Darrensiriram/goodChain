@@ -4,8 +4,8 @@ import pickle
 from utils import helper
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-server_ip = sock.gethostbyname("192.168.2.18")
-client_ip = sock.gethostbyname("192.168.2.44")
+server_ip = sock.gethostbyname("192.168.2.40")
+client_ip = sock.gethostbyname("127.0.0.1")
 port = 5068
 ADDR = (server_ip, port)
 FORMAT = 'utf-8'
@@ -29,11 +29,6 @@ def receive(conn, addr):
                 print("Checking if transactions are valid...")
                 helper.check_transaction_validity()
                 print("Transaction pool received and written to disk.")
-                for tx in transactions:
-                    if tx.is_valid():
-                        print(f"Transaction {tx} is valid")
-                    else:
-                        print(f"Transaction {tx} is not valid")
             elif data_dict.get('Type') == 'block':
                 # Load the received block data as a Python object
                 blocks = pickle.loads(data_dict.get('Data'))
@@ -44,6 +39,7 @@ def receive(conn, addr):
                 with open('data/block.dat', 'wb') as f:
                     pickle.dump(blocks, f)
                 print("Block file received and validated, and written to disk.")
+                helper.fixTampering()
             elif data_dict.get('Type') == 'database':
                 database_data = data_dict.get('Data')
                 with open('database_actions/goodchain.db', 'wb') as f:

@@ -34,8 +34,8 @@ class TxBlock(CBlock):
             return False
         for tx in self.data:
             if tx.is_valid():
-                print("Invalid transaction found in block")
-                return False
+                print("Valid transaction")
+                return True
 
         total_in, total_out = self.__count_totals()
 

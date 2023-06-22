@@ -17,8 +17,9 @@ class CBlock:
         self.data = data
         self.previousBlock = previousBlock
         self.blockId = uuid.uuid1()
-        if previousBlock != None:
+        if previousBlock is not None:
             self.previousHash = previousBlock.computeHash()
+        self.blockHash = self.computeHash()
 
     def computeHash(self):
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
@@ -33,6 +34,7 @@ class CBlock:
                 self.flagValidationStatus = previous_valid_flags + 1
             else:
                 self.flagValidationStatus = 0
+        return self.flagValidationStatus
 
     def is_valid_chain(self):
         if self.previousBlock == None:

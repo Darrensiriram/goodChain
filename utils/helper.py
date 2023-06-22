@@ -1,12 +1,16 @@
 import pickle
+import shutil
 import sqlite3
 import hashlib
 import os
+
+
 def pluckStr(result: list, key):
     if key in result:
         return key
     else:
         return None
+
 
 def get_all_transaction_in_the_pool():
     allTx = []
@@ -18,6 +22,7 @@ def get_all_transaction_in_the_pool():
             pass
     return allTx
 
+
 def check_transaction_validity():
     allTx = get_all_transaction_in_the_pool()
     print("There are {} transactions in the pool.".format(len(allTx)))
@@ -28,6 +33,13 @@ def check_transaction_validity():
         else:
             print(f"Transaction {i} is not valid.")
         i += 1
+
+
+def get_allBlocksInfo():
+    allBlocks = retrieve_blocks()
+    for block in allBlocks:
+        print(block.flagValidationStatus)
+        print("\n")
 
 
 def get_user_name_by_pub_key(con, pbcKey=''):
@@ -50,6 +62,7 @@ def get_all_tx_in_the_chain():
         return None
     else:
         return allTx[0]
+
 
 def create_hash(file_path):
     sha256 = hashlib.sha256()
@@ -104,14 +117,25 @@ def retrieve_blocks():
     return allblocks
 
 
-
 def validateBlock():
     allblocks = retrieve_blocks()
     if len(allblocks) == 0:
         print("Chain is empty")
         return True
     for b in allblocks:
-        if b.is_valid_chain():
+        if b.validate_block():
             return True
         else:
             return False
+
+
+def fixTampering():
+    try:
+        if os.path.exists("backup"):
+            shutil.rmtree("backup")
+            print("Backup folder removed successfully.")
+            create_hash("data/block.dat")
+        else:
+            print("Backup folder does not exist.")
+    except Exception as e:
+        print("An error occurred while removing the backup folder:", str(e))
