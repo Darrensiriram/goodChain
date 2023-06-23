@@ -33,22 +33,49 @@ class CBlock:
 
 
     def is_valid_chain(self):
-        if self.previousBlock is None:
-            if self.blockHash == self.computeHash():
-                return False
-            else:
-                return True
-        else:
-            self.blockHash = self.computeHash()
-            current_block_validity = self.blockHash == self.computeHash()
-            previous_block_validity = self.previousBlock.is_valid_chain()
-            return current_block_validity and previous_block_validity
+        if self is None:
+            return True
+            # Check if the current block is valid
+        if not self.validate_block():
+            return False
+            # Recursively validate the previous blocks in the chain
+        return self.previousBlock.validate_chain()
 
+    # def is_valid_chain(self):
+    #     if self.previousBlock is None:
+    #         if self.blockHash == self.computeHash():
+    #             return False
+    #         else:
+    #             return True
+    #     else:
+    #         self.blockHash = self.computeHash()
+    #         current_block_validity = self.blockHash == self.computeHash()
+    #         previous_block_validity = self.previousBlock.is_valid_chain()
+    #         return current_block_validity and previous_block_validity
+    #
     def validate_block(self):
-        if self.is_valid_chain() and len(self.signatures) >= 3:
-            self.valid = True
-        else:
-            self.valid = False
+        # Verify data integrity and correctness
+        if self.data is None:
+            return False
+
+        # Check if the block has a previous block
+        if self.previousBlock is None:
+            return False
+
+        # Check block linkage
+        if self.previousBlock.computeHash() != self.previousHash:
+            return False
+
+        # Calculate block hash and compare
+        calculated_hash = self.computeHash()
+        if self.blockHash != calculated_hash:
+            return False
+
+        # Optionally check other flags
+        if self.blockId is None or self.valid is None:
+            return False
+
+        return True
 
     def sign_block(self, private_key):
         signature = Signature.sign(self.blockHash, private_key)
