@@ -4,8 +4,8 @@ import pickle
 from utils import helper
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-server_ip = sock.gethostbyname("")
-client_ip = sock.gethostbyname("")
+server_ip = sock.gethostbyname("192.168.68.132")
+client_ip = sock.gethostbyname("192.168.68.134")
 port = 5068
 ADDR = (server_ip, port)
 FORMAT = 'utf-8'

@@ -14,7 +14,6 @@ choiceList = ("1", "2", "3", '4', '5', '6', '7')
 def print_menu_loggedIn(auth_user, connection):
     cur = connection.cursor()
     result = cur.execute('SELECT username,private_key,public_key FROM users WHERE id = ?', (auth_user,)).fetchone()
-    helper.check_transaction_validity()
     sleep(2)
     print(f"Username: {result[0]} \nPrivate key: \n {result[1]} \nPublic key:\n {result[2]} \n")
     print("""
@@ -79,8 +78,6 @@ def actions(auth_user, connection):
                         print("Chain is invalid")
                 continue
         elif int(response) == 2 and helper.compare_hashes('data/block.dat'):
-            if helper.validateBlock():
-                print("chain is valid")
                 print(f"Your current balance is: {checkBalanceObject.current_balance()}")
                 sleep(2)
                 continue
@@ -146,14 +143,12 @@ def actions(auth_user, connection):
                                 mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
                                 loginObject.set_default_value_connectivity()
                                 loginObject.update_time_when_mine()
-                                transferCoinsobject = transferCoins.transfer_coins(connection, auth_user, "system",
-                                                                                   25,
-                                                                                   0)
-                                tx = transferCoinsobject.createSystemTx(25, 0)
+                                transferCoinsobject = transferCoins.transfer_coins(connection, auth_user, "system",50,0)
+                                tx = transferCoinsobject.createSystemTx(50, 0)
                                 transferCoinsobject.save_transaction_in_the_pool(tx)
                                 checkBalanceObject.update_balance()
-                                # server.send_data("block")
-                                # server.send_data("pool")
+                                server.send_data("block")
+                                server.send_data("pool")
                                 break
                     except:
                         print("Oops That is not a valid option")
