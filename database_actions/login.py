@@ -5,6 +5,7 @@ from datetime import datetime
 import time
 auth_user = 0
 from network_actions import server
+from utils import helper
 
 
 class login:
@@ -63,6 +64,7 @@ class login:
         else:
             cur.execute('UPDATE connectivity SET connection_count = connection_count + 1 where id = 1 ')
             self.connection.commit()
+            helper.increment_valid()
             server.send_data("database")
             return "connection_count updated"
 
