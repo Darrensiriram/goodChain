@@ -1,7 +1,6 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
-from blockchainActions import Signature
 import pickle
 import uuid
 
@@ -14,8 +13,7 @@ class CBlock:
     previousBlock = None
     blockHash = None
     blockId = None
-    valid = None
-    signatures = []
+    valid = 0
 
     def __init__(self, data, previousBlock):
         self.data = data
@@ -31,55 +29,34 @@ class CBlock:
         digest.update(bytes(str(self.previousHash), 'utf8'))
         return digest.finalize()
 
-
     def is_valid_chain(self):
         if self is None:
             return True
-            # Check if the current block is valid
+        # Check if the current block is valid
         if not self.validate_block():
             return False
-            # Recursively validate the previous blocks in the chain
-        return self.previousBlock.validate_chain()
+        # Recursively validate the previous blocks in the chain
+        return self.previousBlock.is_valid_chain()
 
-    # def is_valid_chain(self):
-    #     if self.previousBlock is None:
-    #         if self.blockHash == self.computeHash():
-    #             return False
-    #         else:
-    #             return True
-    #     else:
-    #         self.blockHash = self.computeHash()
-    #         current_block_validity = self.blockHash == self.computeHash()
-    #         previous_block_validity = self.previousBlock.is_valid_chain()
-    #         return current_block_validity and previous_block_validity
-    #
     def validate_block(self):
         # Verify data integrity and correctness
         if self.data is None:
             return False
-
         # Check if the block has a previous block
         if self.previousBlock is None:
-            return False
-
+            return True
         # Check block linkage
         if self.previousBlock.computeHash() != self.previousHash:
             return False
-
         # Calculate block hash and compare
         calculated_hash = self.computeHash()
         if self.blockHash != calculated_hash:
             return False
-
         # Optionally check other flags
         if self.blockId is None or self.valid is None:
             return False
 
         return True
-
-    def sign_block(self, private_key):
-        signature = Signature.sign(self.blockHash, private_key)
-        self.signatures.append(signature)
 
     @staticmethod
     def get_prev_block():
@@ -93,3 +70,11 @@ class CBlock:
                     count = count + 1
             except EOFError:
                 pass
+
+        if count > 0:
+            prev_block = block[-1]
+            if prev_block.previousBlock is None and count > 1:
+                prev_block.previousBlock = block[-2]
+                prev_block.previousHash = block[-2].computeHash()
+            return prev_block
+        return None
