@@ -3,7 +3,7 @@ import shutil
 import sqlite3
 import hashlib
 import os
-
+from network_actions import server
 
 def pluckStr(result: list, key):
     if key in result:
@@ -124,16 +124,30 @@ def validateBlock():
         return True
     for b in allblocks:
         if b.validate_block():
-            return True
+            if b.valid >= 3:
+                return True
         else:
             return False
 
+def increment_valid():
+    allblocks = retrieve_blocks()
+    if len(allblocks) == 0:
+        return
+
+    for b in allblocks:
+        if b.validate_block():
+            b.valid += 1
+
+    with open('data/block.dat', "wb") as file:
+        for block in allblocks:
+            pickle.dump(block, file)
+    server.send_data("block")
 
 def fixTampering():
     try:
         if os.path.exists("backup"):
             shutil.rmtree("backup")
-            print("Backup folder removed successfully.")
+            print("")
             create_hash("data/block.dat")
         else:
             print("Backup folder does not exist.")
