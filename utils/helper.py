@@ -34,6 +34,12 @@ def check_transaction_validity():
             print(f"Transaction {i} is not valid.")
         i += 1
 
+def check_block_validity():
+    allBlocks = retrieve_blocks()
+    for block in allBlocks:
+        if block.validate_block():
+            print("Checking block...")
+
 
 def get_allBlocksInfo():
     allBlocks = retrieve_blocks()

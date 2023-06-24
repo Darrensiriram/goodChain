@@ -4,8 +4,8 @@ import pickle
 from utils import helper
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-server_ip = sock.gethostbyname("192.168.68.132")
-client_ip = sock.gethostbyname("192.168.68.134")
+server_ip = sock.gethostbyname("192.168.2.22")
+client_ip = sock.gethostbyname("192.168.2.44")
 port = 5068
 ADDR = (server_ip, port)
 FORMAT = 'utf-8'
@@ -32,14 +32,12 @@ def receive(conn, addr):
             elif data_dict.get('Type') == 'block':
                 # Load the received block data as a Python object
                 blocks = pickle.loads(data_dict.get('Data'))
-                for block in blocks:
-                    block.validate_block()
-                    print(f"Block {block.blockId} is {'valid' if block.valid else 'not valid'}")
                 # Save the validated blocks to disk
                 with open('data/block.dat', 'wb') as f:
                     pickle.dump(blocks, f)
                 print("Block file received and validated, and written to disk.")
                 helper.fixTampering()
+                helper.check_block_validity()
             elif data_dict.get('Type') == 'database':
                 database_data = data_dict.get('Data')
                 with open('database_actions/goodchain.db', 'wb') as f:
