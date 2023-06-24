@@ -34,7 +34,7 @@ def receive(conn, addr):
                 blocks = pickle.loads(data_dict.get('Data'))
                 # Save the validated blocks to disk
                 with open('data/block.dat', 'wb') as f:
-                    pickle.dump(blocks, f)
+                    f.write(data_dict.get('Data'))
                 print("Block file received and validated, and written to disk.")
                 helper.fixTampering()
                 helper.check_block_validity()
