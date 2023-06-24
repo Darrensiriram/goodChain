@@ -1,6 +1,7 @@
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
+from utils import helper
 import pickle
 import uuid
 
@@ -30,7 +31,7 @@ class CBlock:
         return digest.finalize()
 
     def is_valid_chain(self):
-        if self is None:
+        if self.previousBlock is None:
             return True
         # Check if the current block is valid
         if not self.validate_block():
@@ -39,12 +40,17 @@ class CBlock:
         return self.previousBlock.is_valid_chain()
 
     def validate_block(self):
+        allblocks = helper.retrieve_blocks()
         # Verify data integrity and correctness
         if self.data is None:
             return False
         # Check if the block has a previous block
-        if self.previousBlock is None:
-            return True
+        if len(allblocks) <= 0:
+            return False
+        else:
+            if self.previousBlock is None:
+                return True
+
         # Check block linkage
         if self.previousBlock.computeHash() != self.previousHash:
             return False

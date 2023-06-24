@@ -150,8 +150,8 @@ def actions(auth_user, connection):
                                 server.send_data("block")
                                 server.send_data("pool")
                                 break
-                    except:
-                        print("Oops That is not a valid option")
+                    except ValueError:
+                        print("Oops That is not a valid option " + ValueError)
                 sleep(2)
             continue
         elif int(response) == 7:
