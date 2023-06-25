@@ -13,8 +13,9 @@ choiceList = ("1", "2", "3", '4', '5', '6', '7')
 
 def print_menu_loggedIn(auth_user, connection):
     cur = connection.cursor()
-    result = cur.execute('SELECT username FROM users WHERE id = ?', (auth_user,)).fetchone()
-    print(f"Username: {result[0]}")
+    result = cur.execute('SELECT username,private_key,public_key FROM users WHERE id = ?', (auth_user,)).fetchone()
+    sleep(2)
+    print(f"Username: {result[0]} \nPrivate key: \n {result[1]} \nPublic key:\n {result[2]} \n")
     print("""
     1 - Transfer Coins
     2 - Check the Balance
@@ -66,22 +67,17 @@ def actions(auth_user, connection):
                 else:
                     transferCoinsobject = transferCoins.transfer_coins(connection, auth_user, chosen_user, amount, transactionfee)
                     tx = transferCoinsobject.createTx(amount, transactionfee)
-                    txObject = transferCoins.transfer_coins(connection, auth_user, "system_user", transactionfee, amount)
-                    txFee = txObject.createSystemTx(transactionfee, amount)
-                    txObject.save_transaction_in_the_pool(txFee)
+                    txObject = transferCoins.transfer_coins(connection, auth_user, "system", transactionfee, amount)
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
-                    # server.send_transaction(tx, auth_user)
                     server.send_data("pool")
-                    if helper.validateBlock():
-                        print("chain is valid")
-                        continue
-                    else:
-                        print("Chain is invalid")
+                    # if helper.validateBlock():
+                    #     print("chain is valid")
+                    #     continue
+                    # else:
+                    #     print("Chain is invalid")
                 continue
         elif int(response) == 2 and helper.compare_hashes('data/block.dat'):
-            if helper.validateBlock():
-                print("chain is valid")
                 print(f"Your current balance is: {checkBalanceObject.current_balance()}")
                 sleep(2)
                 continue
@@ -147,17 +143,15 @@ def actions(auth_user, connection):
                                 mining_actions.mine_actions.clear_transaction_after_mining(specifyBlocks[0][0])
                                 loginObject.set_default_value_connectivity()
                                 loginObject.update_time_when_mine()
-                                transferCoinsobject = transferCoins.transfer_coins(connection, auth_user, "system_user",
-                                                                                   25,
-                                                                                   0)
-                                tx = transferCoinsobject.createSystemTx(25, 0)
+                                transferCoinsobject = transferCoins.transfer_coins(connection, auth_user, "system",50,0)
+                                tx = transferCoinsobject.createSystemTx(50, 0)
                                 transferCoinsobject.save_transaction_in_the_pool(tx)
                                 checkBalanceObject.update_balance()
                                 server.send_data("block")
                                 server.send_data("pool")
                                 break
-                    except:
-                        print("Oops That is not a valid option")
+                    except ValueError:
+                        print("Oops That is not a valid option " + ValueError)
                 sleep(2)
             continue
         elif int(response) == 7:

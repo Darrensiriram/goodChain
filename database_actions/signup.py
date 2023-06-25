@@ -1,5 +1,6 @@
 import bcrypt
 from blockchainActions.Signature import generate_keys
+from network_actions import server
 
 
 class signUp:
@@ -12,13 +13,21 @@ class signUp:
         self.private_key = private_key.decode("UTF-8")
         self.public_key = public_key.decode("UTF-8")
 
-    def signUpUser(self)-> None:
+    def signUpUser(self) -> None:
+        cur = self.connection.cursor()
+        username_exists_query = "SELECT COUNT(*) FROM users WHERE username = ?"
+        cur.execute(username_exists_query, [self.username])
+        result = cur.fetchone()
+        if result[0] > 0:
+            print("Username already exists. Please choose a different username.")
+            return
         bytes = self.password.encode('UTF-8')
         salt = bcrypt.gensalt(12)
         hashed_pwd = bcrypt.hashpw(bytes, salt)
-        cur = self.connection.cursor()
-        cur.execute("INSERT INTO users (username, password, coins, private_key, public_key) VALUES (?,?,?,?,?)", [self.username, hashed_pwd, self.coins, self.private_key, self.public_key])
+        query = "INSERT INTO users (username, password, coins, private_key, public_key) VALUES (?,?,?,?,?)"
+        cur.execute(query, [self.username, hashed_pwd, self.coins, self.private_key, self.public_key])
         self.connection.commit()
+        server.send_data("database")
 
     def sign_up_system_user(self):
         private_keyNew, public_keyNew = generate_keys()
@@ -28,10 +37,10 @@ class signUp:
         salt = bcrypt.gensalt(12)
         hashed_pwd = bcrypt.hashpw(bytes, salt)
         cur = self.connection.cursor()
-        userFound = cur.execute('SELECT * FROM users where username = "system_user"').fetchone()
+        userFound = cur.execute('SELECT * FROM users where username = "system"').fetchone()
         if userFound is not None:
             return None
         else:
             cur.execute("INSERT INTO users (username, password, coins, private_key, public_key) VALUES (?,?,?,?,?)",
-                        ['system_user', hashed_pwd, 9999999, pvKey, pbKey])
+                        ['system', hashed_pwd, 0, pvKey, pbKey])
             self.connection.commit()

@@ -42,16 +42,6 @@ class mine_actions:
         pickle.dump(block, savefile)
         savefile.close()
 
-        # loadfile = open("block.dat", "rb")
-        # loadBlock = pickle.load(loadfile)
-        # loadfile.close()
-        #
-        # for b in [root, loadBlock]:
-        #     if b.is_valid():
-        #         print("Block is verified")
-        #     else:
-        #         print("Block is not verified")
-
     @staticmethod
     def get_block_chain():
         blockchain = []
@@ -103,8 +93,6 @@ class mine_actions:
                 transactionBlock.remove(x)
         return transactionBlock
 
-
-
     def mine_block(block, index):
         prevblock = blockchainActions.BlockChain.CBlock.get_prev_block()
         txBlock = TxBlock(prevblock)
@@ -115,7 +103,7 @@ class mine_actions:
                 if txBlock.is_valid():
                     mine_actions.mine_timer(txBlock)
         mine_actions.save_to_chain(txBlock)
-
+        helper.fixTampering()
 
     def mine_timer(txblock):
         start = time.time()

@@ -1,10 +1,11 @@
 import socket as sock
 import threading
 import pickle
+from utils import helper
 
 socket = sock.socket(sock.AF_INET, sock.SOCK_STREAM)
-server_ip = sock.gethostbyname("145.137.73.143")
-client_ip = sock.gethostbyname("145.137.31.136")
+server_ip = sock.gethostbyname("192.168.2.22")
+client_ip = sock.gethostbyname("192.168.2.44")
 port = 5068
 ADDR = (server_ip, port)
 FORMAT = 'utf-8'
@@ -22,14 +23,28 @@ def receive(conn, addr):
         data_dict = pickle.loads(buffer)
         if isinstance(data_dict, dict):
             if data_dict.get('Type') == 'pool':
+                transactions = data_dict.get('Data')
                 with open('data/pool.dat', 'wb') as f:
-                    f.write(data_dict.get('Data'))
+                    f.write(transactions)
+                print("Checking if transactions are valid...")
+                helper.fixTampering()
+                helper.check_transaction_validity()
                 print("Transaction pool received and written to disk.")
-
             elif data_dict.get('Type') == 'block':
+                # Load the received block data as a Python object
+                blocks = pickle.loads(data_dict.get('Data'))
+                # Save the validated blocks to disk
                 with open('data/block.dat', 'wb') as f:
                     f.write(data_dict.get('Data'))
-                print("Block file received and written to disk.")
+                print("Block file received and validated, and written to disk.")
+                helper.fixTampering()
+                helper.check_block_validity()
+            elif data_dict.get('Type') == 'database':
+                database_data = data_dict.get('Data')
+                with open('database_actions/goodchain.db', 'wb') as f:
+                    f.write(database_data)
+                print("Database file received and overwritten.")
+                helper.fixTampering()
             else:
                 print("Unknown data type received.")
         else:
@@ -58,7 +73,13 @@ def send_data(data_type):
                     chunk = data[i:i+chunk_size]
                     s.sendall(pickle.dumps({'Type': 'block', 'Data': chunk}))
                 print("Block file sent.")
+        elif data_type == 'database':
+            with open('database_actions/goodchain.db', 'rb') as f:
+                data = f.read()
+                s.sendall(pickle.dumps({'Type': 'database', 'Data': data}))
+                print("Database file sent.")
         s.close()
+
 
 def start_server():
     with sock.socket(sock.AF_INET, sock.SOCK_STREAM) as s:

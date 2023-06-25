@@ -74,8 +74,8 @@ class Tx:
                 if not found:
                     return False
             for addr, amount in self.outputs:
-                if amount < 0:
-                    return False
+                # if amount < 0:
+                #     return False
                 total_out = total_out + amount
 
             if total_out > total_in:

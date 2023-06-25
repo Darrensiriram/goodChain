@@ -54,3 +54,9 @@ LunarVim is highly customizable. You can add your own keybindings and configure 
 
 For more information on customization, please refer to the LunarVim documentation.j
 
+## set up docker to test between nodes:
+
+1. create build file: `docker build -t goodchain .`
+2. run the docker image: `docker run -it goodchain /bin/sh`
+3. alter first the server.py to change the ip address to the docker ip address 
+4. run the application: `python3 goodchain.py`
