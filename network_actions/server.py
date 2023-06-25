@@ -27,6 +27,7 @@ def receive(conn, addr):
                 with open('data/pool.dat', 'wb') as f:
                     f.write(transactions)
                 print("Checking if transactions are valid...")
+                helper.fixTampering()
                 helper.check_transaction_validity()
                 print("Transaction pool received and written to disk.")
             elif data_dict.get('Type') == 'block':
@@ -43,6 +44,7 @@ def receive(conn, addr):
                 with open('database_actions/goodchain.db', 'wb') as f:
                     f.write(database_data)
                 print("Database file received and overwritten.")
+                helper.fixTampering()
             else:
                 print("Unknown data type received.")
         else:

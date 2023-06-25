@@ -38,7 +38,7 @@ def check_block_validity():
     allBlocks = retrieve_blocks()
     for block in allBlocks:
         if block.validate_block():
-            print("Checking block...")
+            pass
 
 
 def get_allBlocksInfo():
