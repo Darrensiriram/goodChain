@@ -63,10 +63,11 @@ class balance:
         currentLoggedInPbcKey = self.get_user_pubc_key_by_id(self.authUser)
         currentbalance = 0
         for x in alltx:
-           amount = x.outputs[0][1]
-           pubcKey = x.outputs[0][0]
-           if currentLoggedInPbcKey.decode('utf-8') == pubcKey.decode('utf-8'):
-            currentbalance += amount
+            for output in x.outputs:
+                pubcKey = output[0]
+                amount = output[1]
+                if currentLoggedInPbcKey.decode('utf-8') == pubcKey.decode('utf-8'):
+                    currentbalance += amount
         return currentbalance
 
     def calculate_the_balance_using_pool_outcome(self):
@@ -74,62 +75,58 @@ class balance:
         pubc_key = self.get_user_pubc_key_by_id(self.authUser)
         currentbalance = 0
         for x in alltx:
-            pubkey_x = x.inputs[0][0]
-            if pubc_key.decode('utf-8') == pubkey_x.decode('utf-8'):
-                outcome = x.inputs[0][1]
-                currentbalance += outcome
+            for input in x.inputs:
+                pubkey_x = input[0]
+                outcome = input[1]
+                if pubc_key.decode('utf-8') == pubkey_x.decode('utf-8'):
+                    currentbalance += outcome
         return currentbalance
 
     def total_balance_pool(self):
         outcome = self.calculate_the_balance_using_pool_outcome()
         income = self.calculate_the_balance_using_pool_income()
-        balance = 50
         if income != outcome:
-            return balance - outcome
-        return None
+            return income - outcome
+        return 0
 
     def calculate_the_balance_using_chain_outcome(self):
         allTx = retrieve_blocks()
         if allTx is None:
             return "Chain is empty"
-        else:
-            pubc_key = self.get_user_pubc_key_by_id(self.authUser)
-            balanceChain = 0
-            for x in allTx:
-                for y in x.data:
-                    pubc_keyX = y.inputs[0][0]
-                    if pubc_key.decode('UTF-8') == pubc_keyX.decode('utf-8'):
-                        uitgave = y.inputs[0][1]
+        pubc_key = self.get_user_pubc_key_by_id(self.authUser)
+        balanceChain = 0
+        for block in allTx:
+            for transaction in block.data:
+                for input in transaction.inputs:
+                    pubc_keyX = input[0]
+                    uitgave = input[1]
+                    if pubc_key.decode('utf-8') == pubc_keyX.decode('utf-8'):
                         balanceChain += uitgave
-            return balanceChain
+        return balanceChain
 
     def calculate_the_balance_using_chain_income(self):
         alltx = retrieve_blocks()
         if alltx is None:
             return "Chain is empty"
-        else:
-            pubc_key = self.get_user_pubc_key_by_id(self.authUser)
-            balanceChain = 0
-            for x in alltx:
-                for y in x.data:
-                    amount = y.outputs[0][1]
-                    pubcKey = y.outputs[0][0]
+        pubc_key = self.get_user_pubc_key_by_id(self.authUser)
+        balanceChain = 0
+        for block in alltx:
+            for transaction in block.data:
+                for output in transaction.outputs:
+                    pubcKey = output[0]
+                    amount = output[1]
                     if pubc_key.decode('utf-8') == pubcKey.decode('utf-8'):
                         balanceChain += amount
-            return balanceChain
+        return balanceChain
 
     def total_balance_chain(self):
         income = self.calculate_the_balance_using_chain_income()
         outcome = self.calculate_the_balance_using_chain_outcome()
-        balance = 50
         if income != outcome:
-            return (balance - outcome) + income
-        return None
+            return income - outcome
+        return 0
+
     def current_balance(self):
-        if self.total_balance_pool() is not None and self.total_balance_chain() is not None:
-            return self.total_balance_pool() + self.total_balance_chain()
-        elif self.total_balance_pool() is not None:
-            return self.total_balance_pool()
-        elif self.total_balance_chain() is not None:
-            return self.total_balance_chain()
-        return 50
+        total_pool_balance = self.total_balance_pool()
+        total_chain_balance = self.total_balance_chain()
+        return 50 + total_pool_balance + total_chain_balance

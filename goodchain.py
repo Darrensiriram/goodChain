@@ -38,7 +38,7 @@ def print_public_menu():
 
 def startMenu():
     while True:
-        #os.system('cls' if os.name == 'nt' else 'clear')
+        os.system('cls' if os.name == 'nt' else 'clear')
         print_public_menu()
         response = input("What would u like to do? \n ")
         if response not in choiceList:

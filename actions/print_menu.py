@@ -71,11 +71,11 @@ def actions(auth_user, connection):
                     transferCoinsobject.save_transaction_in_the_pool(tx)
                     print("Coins have been transferred")
                     server.send_data("pool")
-                    if helper.validateBlock():
-                        print("chain is valid")
-                        continue
-                    else:
-                        print("Chain is invalid")
+                    # if helper.validateBlock():
+                    #     print("chain is valid")
+                    #     continue
+                    # else:
+                    #     print("Chain is invalid")
                 continue
         elif int(response) == 2 and helper.compare_hashes('data/block.dat'):
                 print(f"Your current balance is: {checkBalanceObject.current_balance()}")
